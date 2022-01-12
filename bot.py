@@ -10,6 +10,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as excond
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 import requests
+from lxml import etree
+from io import StringIO
 
 firefox_options = FirefoxOptions()
 firefox_options.add_argument("window-size=1920,1080")
@@ -35,8 +37,52 @@ DS_INC = False
 important_stuff = {}
 
 
+def get_webpage(url):
+    response = requests.get(url)
+    dom_tree = etree.parse(
+        StringIO(response.content.decode('utf-8')),
+        parser=etree.HTMLParser()
+    )
+
+    return dom_tree
+
 @client.command()
 async def anime(ctx: Context, name: str, *args):
+    for arg in args:
+        name += f' {arg}'
+    if len(name) <= 2:
+        await ctx.channel.send(f'The name must be at least 3 characters long.')
+        return
+    await ctx.channel.send(f'Searching in MyAnimeList for {name}...')
+
+    mal_page = get_webpage(f'https://myanimelist.net/search/all?q={name}&cat=all')
+    first_link = mal_page.xpath('//article[1]//a[1]')[0].get('href')
+
+    mal_page = get_webpage(first_link)
+
+    img_src = mal_page.xpath('//*[@class="borderClass"]//img[1]')[0].get('data-src')
+    title = mal_page.xpath('//h1[contains(@class, "title-name")]')[0].getchildren()[0].text
+    try:
+        eng_title = mal_page.xpath('//p[contains(@class, "title-english")]')[0].text
+    except IndexError:
+        eng_title = None
+
+    # save image
+    response = requests.get(img_src)
+    response.raise_for_status()
+
+    with open('assets/AnimePic.png', 'wb') as img:
+        img.write(response.content)
+
+    # send image
+    with open('assets/AnimePic.png', 'rb') as img:
+        f = discord.File(img, filename='search_result.png')
+        title_string = f'**{title}**' + (f' ({eng_title})' if eng_title else '')
+        await ctx.channel.send(f'Result from MyAnimeList <{first_link}> \n\n'
+                               f'{title_string}', file=f)
+
+@client.command()
+async def anime_slow(ctx: Context, name: str, *args):
     for arg in args:
         name += f' {arg}'
     if len(name) <= 2:
