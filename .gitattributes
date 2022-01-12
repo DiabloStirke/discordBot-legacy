@@ -1,2 +1,2 @@
-ffmpeg/** linguist-vendored=false
-assets/** linguist-vendored=false
+ffmpeg/** linguist-vendored
+assets/** linguist-vendored
