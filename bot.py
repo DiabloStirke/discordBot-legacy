@@ -4,28 +4,11 @@ from discord.ext.commands.context import Context
 import config
 import asyncio
 import random
-from selenium.webdriver.common.by import By
-from selenium.webdriver import Firefox, FirefoxOptions
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as excond
-from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
-import requests
-from lxml import etree
-from io import StringIO
-
-firefox_options = FirefoxOptions()
-firefox_options.add_argument("window-size=1920,1080")
-firefox_options.add_argument('--disable-web-security')
-# firefox_options.add_argument('--start-maximized')
-firefox_options.add_argument('--no-sandbox')
-firefox_options.add_argument('--trace-to-console')
-firefox_options.add_argument('--trace-startup')
-# firefox_options.add_argument('--screenshot')
-firefox_options.add_argument('--headless')
-firefox_options.add_argument('--disable-dev-shm-usage')
-firefox_options.set_preference('intl.accept_languages', 'en-US, en')
-
-ignored_exceptions = (StaleElementReferenceException, )
+from anime import (
+    handle_anime,
+    handle_manga,
+    handle_ranime
+)
 
 
 intents = discord.Intents().all()
@@ -37,123 +20,19 @@ DS_INC = False
 important_stuff = {}
 
 
-def get_webpage(url):
-    response = requests.get(url)
-    dom_tree = etree.parse(
-        StringIO(response.content.decode('utf-8')),
-        parser=etree.HTMLParser()
-    )
-
-    return dom_tree
-
-async def send_anime_info(url, ctx):
-    mal_page = get_webpage(url)
-
-    img_src = mal_page.xpath('//*[@class="borderClass"]//img[1]')[0].get('data-src')
-    title = mal_page.xpath('//h1[contains(@class, "title-name")]')[0].getchildren()[0].text
-    try:
-        eng_title = mal_page.xpath('//p[contains(@class, "title-english")]')[0].text
-    except IndexError:
-        eng_title = None
-
-    # save image
-    response = requests.get(img_src)
-    response.raise_for_status()
-
-    with open('assets/AnimePic.png', 'wb') as img:
-        img.write(response.content)
-
-    # send image
-    with open('assets/AnimePic.png', 'rb') as img:
-        f = discord.File(img, filename='search_result.png')
-        title_string = f'**{title}**' + (f' ({eng_title})' if eng_title else '')
-        await ctx.channel.send(f'Result from MyAnimeList <{url}> \n\n'
-                               f'{title_string}', file=f)
-
 @client.command()
-async def ranime(ctx: Context):
-    num_pages = config.MAL_MAX_ANIMES//config.MAL_ANIMES_PER_PAGE
-    page = random.randint(0, num_pages)
-    num_animes = config.MAL_ANIMES_PER_PAGE
-    if page == num_pages:
-        num_animes = config.MAL_MAX_ANIMES % config.MAL_ANIMES_PER_PAGE or 50
-    anime = random.randint(0, num_animes)
-    print(f'https://myanimelist.net/topanime.php?limit={page*50}, anime {anime}')
-
-    all_animes = get_webpage(f'https://myanimelist.net/topanime.php?limit={page*50}')
-    rnd_link = all_animes.xpath(
-        f'//table[contains(@class, "top-ranking")]//tr[@class="ranking-list"][{anime}]//a[1]'
-    )[0].get('href')
-
-    await send_anime_info(rnd_link, ctx)
+async def anime(ctx, name, *args):
+    await handle_anime(ctx, name, *args)
 
 
 @client.command()
-async def anime(ctx: Context, name: str, *args):
-    for arg in args:
-        name += f' {arg}'
-    if len(name) <= 2:
-        await ctx.channel.send(f'The name must be at least 3 characters long.')
-        return
-    await ctx.channel.send(f'Searching in MyAnimeList for {name}...')
-
-    mal_page = get_webpage(f'https://myanimelist.net/search/all?q={name}&cat=all')
-    first_link = mal_page.xpath('//article[1]//a[1]')[0].get('href')
-
-    await send_anime_info(first_link, ctx)
+async def manga(ctx, name, *args):
+    await handle_manga(ctx, name, *args)
 
 
 @client.command()
-async def anime_slow(ctx: Context, name: str, *args):
-    for arg in args:
-        name += f' {arg}'
-    if len(name) <= 2:
-        await ctx.channel.send(f'The name must be at least 3 characters long.')
-        return
-    await ctx.channel.send(f'Searching in MyAnimeList for {name}...')
-    browser = Firefox(options=firefox_options)
-    browser.get(f'https://myanimelist.net/search/all?q={name}&cat=all')
-    # sell bot's soul to devil (accept cookies)
-    try:
-        button = WebDriverWait(browser, 0.5, ignored_exceptions=ignored_exceptions).until(
-            excond.presence_of_element_located(
-                (By.XPATH, '//button[contains(text(), "AGREE")]')
-            )
-        )
-    except TimeoutException:
-        print('skipped cookie acceptation')
-    else:
-        button.click()
-
-    WebDriverWait(browser, 1, ignored_exceptions=ignored_exceptions).until(
-        excond.presence_of_element_located(
-            (By.XPATH, f"//div[contains(text(), 'Search Results for \"{name}\"')]"))
-    )
-    # get the first result
-    first_link = browser.find_element(By.XPATH, '//article[1]//a[1]').get_attribute('href')
-    browser.get(first_link)
-    img_src = WebDriverWait(browser, 1, ignored_exceptions=ignored_exceptions).until(
-        excond.presence_of_element_located((By.XPATH, '//*[@class="borderClass"]//img[1]'))
-    ).get_attribute('src')
-    title = browser.find_element(By.XPATH, '//h1[contains(@class, "title-name")]').text
-    try:
-        eng_title = browser.find_element(By.XPATH, '//p[contains(@class, "title-english")]').text
-    except NoSuchElementException:
-        eng_title = None
-    browser.close()
-
-    # save image
-    response = requests.get(img_src)
-    response.raise_for_status()
-    with open('assets/AnimePic.png', 'wb') as img:
-        img.write(response.content)
-
-    # send image
-    with open('assets/AnimePic.png', 'rb') as img:
-        f = discord.File(img, filename='search_result.png')
-        title_string = f'**{title}**' + (f' ({eng_title})' if eng_title else '')
-        await ctx.channel.send(f'Result from MyAnimeList <{first_link}> \n\n'
-                               f'{title_string}', file=f)
+async def ranime(ctx):
+    await handle_ranime(ctx)
 
 
 @client.command()
