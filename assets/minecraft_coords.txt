@@ -1,0 +1,9 @@
+Casa: 221 63 121
+portal nether: 39 66 5
+Tortugas: -300 68 312
+Desierto+aldea+arrecife de coral: -4211 63 3655
+templo agua: -2833 63 3760
+Aldea guay(gatos): -2585 69 356
+Entrada a la mina abandonada -2169 78 70
+portal nether: 39 66 5
+Granja de oro: -107 128 163

@@ -36,6 +36,34 @@ async def ranime(ctx):
 
 
 @client.command()
+async def activeitou(ctx):
+    with open('assets/ActivateWindows.png', 'rb') as img:
+        f = discord.File(img, filename='ActivateWindows.png')
+        await ctx.channel.send(file=f)
+
+
+@client.command(aliases=['minecraft', 'coordinates', 'coords'])
+async def meinkampf(ctx):
+    with open('assets/minecraft_coords.txt', 'r') as file:
+        coords = file.readlines()
+        coords.sort(key=lambda v: v.lower())
+        string_coords = ''.join(coords)
+
+    await ctx.channel.send(string_coords)
+
+
+@client.command(aliases=['addCoords', 'newCoords', 'addCoordinates', 'newCoordinates'])
+async def add_coords(ctx, coord, *args):
+    for arg in args:
+        coord += f' {arg}'
+    coord += '\n'
+    with open('assets/minecraft_coords.txt', 'a') as file:
+        file.write(coord)
+
+    await ctx.channel.send('New coordinates added')
+
+
+@client.command()
 async def purei(ctx):
     print('AA', ctx)
     vc = ctx.author.voice.channel
