@@ -3,10 +3,11 @@ import config
 import discord
 import requests
 import random
+import asyncio
 from discord.ext.commands.context import Context
 
 
-async def send_anime_info(url, ctx):
+async def send_anime_info(url, ctx, wish=False):
     mal_page = get_webpage(url)
 
     img_src = mal_page.xpath('//*[@class="borderClass"]//img[1]')[0].get('data-src')
@@ -28,6 +29,20 @@ async def send_anime_info(url, ctx):
 
     with open('assets/AnimePic.png', 'wb') as img:
         img.write(response.content)
+
+    if wish:
+        wish_file = None
+        try:
+            score_int = float(score)
+        except ValueError:
+            score_int = 0.0
+        if score_int >= 8:
+            wish_file = 'assets/genshin_wish_5star.gif'
+        if wish_file:
+            with open(wish_file, 'rb') as gif:
+                f = discord.File(gif, filename='wish.gif')
+                await ctx.channel.send(file=f)
+                await asyncio.sleep(6)
 
     # send image
     with open('assets/AnimePic.png', 'rb') as img:
@@ -54,7 +69,7 @@ async def handle_ranime(ctx: Context):
         f'//table[contains(@class, "top-ranking")]//tr[@class="ranking-list"][{anime}]//a[1]'
     )[0].get('href')
 
-    await send_anime_info(rnd_link, ctx)
+    await send_anime_info(rnd_link, ctx, wish=True)
 
 
 async def handle_anime(ctx: Context, name: str, *args):
