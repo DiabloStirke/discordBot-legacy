@@ -1,9 +1,15 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import has_permissions
 from discord.ext.commands.context import Context
+from discord import Member, Role
 import config
+import datetime
 import asyncio
 import random
+import json
+from utils import find_vc
+from typing import Optional, Union
 from anime import (
     handle_anime,
     handle_manga,
@@ -20,7 +26,7 @@ DS_INC = False
 important_stuff = {}
 
 
-@client.command()
+@client.command(aliases=['a'])
 async def anime(ctx, name, *args):
     await handle_anime(ctx, name, *args)
 
@@ -30,9 +36,146 @@ async def manga(ctx, name, *args):
     await handle_manga(ctx, name, *args)
 
 
-@client.command()
+@client.command(aliases=['ra'])
 async def ranime(ctx):
     await handle_ranime(ctx)
+
+
+@has_permissions(administrator=True)
+@client.command(aliases=['pconf'])
+async def punishconf(ctx: Context, config: str, arg: Union[Role, str]):
+    with open('data/punishment_roles.json', 'r') as conf:
+        current_conf = json.load(conf)
+
+    match config.lower():
+        case 'role' | 'r':
+            if not isinstance(arg, Role):
+                await ctx.channel.send('You should mention the role with "@"')
+                return
+            guild_conf = current_conf.get(str(ctx.guild.id), {})
+            guild_conf['role'] = arg.id
+            current_conf[str(ctx.guild.id)] = guild_conf
+
+        case 'channel' | 'ch' | 'c':
+            arg = str(arg)
+            vc = find_vc(ctx.guild, arg)
+            if vc is None:
+                await ctx.channel.send(f'Voice channel "{arg}" not found.')
+                return
+            guild_conf = current_conf.get(str(ctx.guild.id), {})
+            guild_conf['channel'] = vc.id
+            current_conf[str(ctx.guild.id)] = guild_conf
+
+        case _:
+            await ctx.channel.send('Not a valid config.')
+            return
+
+    with open('data/punishment_roles.json', 'w') as conf:
+        json.dump(current_conf, conf)
+
+    await ctx.channel.send('OK')
+
+
+#@has_permissions(move_members=True, manage_roles=True)
+@client.command(aliases=['gulag', 'g', 'p'])
+async def punish(ctx: Context, user: Member, time=None):
+    print(f'{user.name}, {time}')
+    punishment_end = None
+
+    # Treat time arg and parse it to string
+    if time:
+        time_comps = time.split(':')
+        valid = 1 <= len(time_comps) <= 4
+        try:
+            time_comps = list(reversed([int(tc) for tc in time_comps]))
+        except ValueError:
+            valid = False
+        if not valid:
+            await ctx.channel.send('Invalid time format')
+            return
+
+        time_comps_dict = {}
+        for idx, tc in enumerate(time_comps):
+            keys = ['seconds', 'minutes', 'hours', 'days']
+            time_comps_dict[keys[idx]] = tc
+
+        punishment_duration = datetime.timedelta(**time_comps_dict)
+
+        if punishment_duration.total_seconds() < 30:
+            await ctx.channel.send('The punishment should be at least 30 seconds long')
+
+        punishment_end_dt = datetime.datetime.now() + punishment_duration
+
+        punishment_end = punishment_end_dt.strftime(config.DATETIME_STR_FORMAT)
+
+    initial_roles = user.roles[1:]
+    print(initial_roles)
+    await user.remove_roles(*initial_roles, reason='punishment')
+
+    # save punished user initial data
+    with open('data/punished_users.json', 'r') as f_pu:
+        pu_dict = json.load(f_pu)
+
+    pu_dict[str(user.id)] = {
+        'initial_roles': [role.id for role in initial_roles],
+        'punishment_end': punishment_end
+    }
+
+    with open('data/punished_users.json', 'w') as f_pu:
+        json.dump(pu_dict, f_pu)
+
+    # get punishment role
+    with open('data/punishment_roles.json', 'r') as f_punishment_roles:
+        punishment_roles_dict = json.load(f_punishment_roles)
+
+    guild_conf = punishment_roles_dict.get(str(ctx.guild.id), None)
+
+    if not guild_conf or not guild_conf.get('role', None):
+        await ctx.channel.send('It seems that this feature is not configured yet on this server\n'
+                               'To do so create a role with preferred permissions and add it '
+                               'to my database sending ?punishconf role @role')
+
+    await user.add_roles(ctx.guild.get_role(guild_conf['role']))
+
+    if user.voice and guild_conf.get('channel', None):
+        await user.move_to(ctx.guild.get_channel(guild_conf['channel']))
+
+    # await ctx.channel.send(f'User {user.mention} was punished'
+    #                        '' if )
+
+
+# @has_permissions(move_members=True, manage_roles=True)
+@client.command(aliases=['pa', 'forgive', 'f'])
+async def pardon(ctx: Context, user: Member):
+    print(f'{user.name}')
+    with open('data/punished_users.json', 'r') as f_pu:
+        pu_dict = json.load(f_pu)
+
+    print(pu_dict)
+
+    user_recovery_data = pu_dict.pop(str(user.id), None)
+    print(pu_dict)
+
+
+    if not user_recovery_data:
+        await ctx.channel.send('This user is not punished')
+        return
+
+    with open('data/punished_users.json', 'w') as f_pu:
+        print(pu_dict)
+        json.dump(pu_dict, f_pu)
+
+    with open('data/punishment_roles.json', 'r') as f_punishment_roles:
+        punishment_roles_dict = json.load(f_punishment_roles)
+        guild_conf = punishment_roles_dict.get(str(ctx.guild.id))
+        punishment_role = guild_conf['role']
+
+    await user.remove_roles(ctx.guild.get_role(punishment_role), reason='pardon')
+    await user.add_roles(
+        *[ctx.guild.get_role(role_id) for role_id in user_recovery_data['initial_roles']],
+        reason='pardon'
+    )
+    await ctx.channel.send('OK')
 
 
 @client.command()
@@ -74,21 +217,15 @@ async def purei(ctx):
 
     voice.play(discord.FFmpegPCMAudio(executable='ffmpeg/bin/ffmpeg.exe', source='assets/nggyu.mp3'))
 
+
 @client.command()
 async def fuckoff(ctx):
     if ctx.voice_client:
         await ctx.voice_client.disconnect()
 
-@client.command()
-async def a(ctx):
-    await ctx.channel.send('a')
-
 
 async def launch_diablo_strike(message):
-    move_to = None
-    for _vc in message.guild.voice_channels:
-        if config.DEATH_CHANNEL == _vc.name:
-            move_to = _vc
+    move_to = find_vc(message.guild, config.DEATH_CHANNEL)
     vc = message.author.voice
     if not vc:
         await message.channel.send("To use DIABLO Strike start a run (join any voice channel)")
@@ -173,6 +310,7 @@ async def on_message(message):
         return
 
     await client.process_commands(message)
+
 
 def main():
     client.run(config.DISCORD_BOT_TOKEN)

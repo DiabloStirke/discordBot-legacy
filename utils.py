@@ -11,3 +11,10 @@ def get_webpage(url):
     )
 
     return dom_tree
+
+
+def find_vc(guild, name):
+    for _vc in guild.voice_channels:
+        if name == _vc.name:
+            return _vc
+    return None

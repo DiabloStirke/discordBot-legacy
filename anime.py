@@ -38,6 +38,10 @@ async def send_anime_info(url, ctx, wish=False):
             score_int = 0.0
         if score_int >= 8:
             wish_file = 'assets/genshin_wish_5star.gif'
+        elif score_int >= 6.66:
+            wish_file = 'assets/genshin_wish_4star.gif'
+        else:
+            wish_file = 'assets/genshin_wish_3star.gif'
         if wish_file:
             with open(wish_file, 'rb') as gif:
                 f = discord.File(gif, filename='wish.gif')
