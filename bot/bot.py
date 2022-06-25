@@ -210,6 +210,10 @@ async def purei(ctx):
 
     voice.play(discord.FFmpegPCMAudio(executable=exe_path, source='assets/nggyu.mp3'))
 
+@client.command()
+async def aa(ctx):
+    ctx.channel.send("sdafma")
+
 
 @client.command()
 async def fuckoff(ctx):
