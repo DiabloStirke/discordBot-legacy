@@ -5,6 +5,9 @@ import requests
 import random
 import asyncio
 from discord.ext.commands.context import Context
+import structlog
+
+logger = structlog.get_logger("DS Bot anime module")
 
 
 async def send_anime_info(url, ctx, wish=False):
@@ -64,7 +67,7 @@ async def handle_ranime(ctx: Context):
     if page == num_pages:
         num_animes = config.MAL_MAX_ANIMES % config.MAL_ANIMES_PER_PAGE or 50
     anime = random.randint(1, num_animes)
-    print(f'https://myanimelist.net/topanime.php?limit={page*50}, anime {anime}')
+    logger.info(f'https://myanimelist.net/topanime.php?limit={page*50}, anime {anime}')
 
     all_animes = get_webpage(f'https://myanimelist.net/topanime.php?limit={page*50}')
     rnd_link = all_animes.xpath(

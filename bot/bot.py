@@ -97,7 +97,7 @@ async def punish(ctx: Context, user: Member):
         return
 
     initial_roles = user.roles[1:]
-    print(initial_roles)
+    logger.info(initial_roles)
     vc_stat = user.voice
     await user.remove_roles(*initial_roles, reason='punishment')
 
@@ -137,17 +137,17 @@ async def pardon(ctx: Context, user: Member):
     with open('data/punished_users.json', 'r') as f_pu:
         pu_dict = json.load(f_pu)
 
-    print(pu_dict)
+    logger.info(pu_dict)
 
     user_recovery_data = pu_dict.pop(str(user.id), None)
-    print(pu_dict)
+    logger.info(pu_dict)
 
     if not user_recovery_data:
         await ctx.channel.send('This user is not punished')
         return
 
     with open('data/punished_users.json', 'w') as f_pu:
-        print(pu_dict)
+        logger.info(pu_dict)
         json.dump(pu_dict, f_pu)
 
     await user.remove_roles(ctx.guild.get_role(punishment_role), reason='pardon')
@@ -210,10 +210,6 @@ async def purei(ctx):
 
     voice.play(discord.FFmpegPCMAudio(executable=exe_path, source='assets/nggyu.mp3'))
 
-@client.command()
-async def aa(ctx):
-    await ctx.channel.send("sdafma")
-
 
 @client.command()
 async def fuckoff(ctx):
@@ -258,7 +254,7 @@ async def on_message(message):
     global DS_INC, important_stuff
 
     if isinstance(message.channel, discord.DMChannel) and message.author.id == 369546906449346560:
-        print(f'({message.author.id}) {message.author}: {message.content}')
+        logger.info(f'({message.author.id}) {message.author}: {message.content}')
         # if message.author.id == 370953016951439361: #joey
         #     await message.channel.send('No lo repetiré, está feo que robes waifus')
         #     return
@@ -301,7 +297,7 @@ async def on_message(message):
                 continue
             important_stuff[f'tl_{ch.name}'] = ch
         important_stuff['current'] = important_stuff[f'tl_general']
-        print(important_stuff)
+        logger.info(important_stuff)
         await message.channel.send('OK')
         return
 
