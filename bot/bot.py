@@ -15,8 +15,10 @@ from anime import (
     handle_manga,
     handle_ranime
 )
-from  sys import platform
+from sys import platform
+import structlog
 
+logger = structlog.get_logger("DS Bot")
 
 intents = discord.Intents().all()
 # client = discord.Client(intents=intents)
@@ -25,7 +27,6 @@ client = commands.Bot(command_prefix='?', intents=intents)
 DS_INC = False
 
 important_stuff = {}
-
 
 @client.command(aliases=['a'])
 async def anime(ctx, name, *args):
