@@ -15,6 +15,7 @@ from anime import (
     handle_manga,
     handle_ranime
 )
+from  sys import platform
 
 
 intents = discord.Intents().all()
@@ -189,14 +190,24 @@ async def add_coords(ctx, coord, *args):
 
 @client.command()
 async def purei(ctx):
-    print('AA', ctx)
+
+    exe_path = None
+    if platform == "linux" or platform == "linux2":
+        exe_path = "/usr/bin/ffmpeg"
+    elif platform == "win32" or platform == "win64":
+        exe_path = 'ffmpeg/bin/ffmpeg.exe'
+
+    if not exe_path:
+        ctx.channel.send("Something went wrong, I am unable to reproduce audio")
+        return
+
     vc = ctx.author.voice.channel
     voice = ctx.voice_client
     if not voice:
         await vc.connect()
         voice = ctx.voice_client
 
-    voice.play(discord.FFmpegPCMAudio(executable='ffmpeg/bin/ffmpeg.exe', source='assets/nggyu.mp3'))
+    voice.play(discord.FFmpegPCMAudio(executable=exe_path, source='assets/nggyu.mp3'))
 
 
 @client.command()
