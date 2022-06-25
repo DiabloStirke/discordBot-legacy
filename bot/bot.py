@@ -212,7 +212,7 @@ async def purei(ctx):
 
 @client.command()
 async def aa(ctx):
-    ctx.channel.send("sdafma")
+    await ctx.channel.send("sdafma")
 
 
 @client.command()
