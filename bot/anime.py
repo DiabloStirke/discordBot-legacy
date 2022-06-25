@@ -7,7 +7,7 @@ import asyncio
 from discord.ext.commands.context import Context
 import structlog
 
-logger = structlog.get_logger("DS Bot anime module")
+logger = structlog.get_logger(__name__)
 
 
 async def send_anime_info(url, ctx, wish=False):

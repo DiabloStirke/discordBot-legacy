@@ -18,7 +18,7 @@ from anime import (
 from sys import platform
 import structlog
 
-logger = structlog.get_logger("DS Bot")
+logger = structlog.get_logger(__name__)
 
 intents = discord.Intents().all()
 # client = discord.Client(intents=intents)
