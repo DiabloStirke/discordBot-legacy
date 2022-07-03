@@ -49,6 +49,7 @@ async def launch_diablo_strike(ctx):
         DS_INC[str(ctx.guild.id)] = True
     else:
         await ctx.channel.send(f"Your DIABLO STRIKE is on cooldown.")
+        return
 
     move_to = find_vc(ctx.guild, config.DEATH_CHANNEL)
     vc = ctx.author.voice
