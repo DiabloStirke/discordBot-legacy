@@ -2,7 +2,10 @@ from bot_config import client
 import config
 
 # Bot command modules. They need to be included to process the @client.command decorator
-from . import anime, punishment, music, misc
+import bot.anime
+import bot.punishment
+import bot.music
+import bot.misc
 
 
 def main():

@@ -4,11 +4,11 @@ ENV PYTHONBUFFERED 1
 RUN apt-get update
 RUN apt-get install -y ffmpeg
 
-COPY bot discord_bot
+COPY bot bot
 COPY requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
 
-WORKDIR /discord_bot
+WORKDIR /bot
 
 CMD python bot.py
