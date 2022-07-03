@@ -6,6 +6,7 @@ import random
 import asyncio
 from discord.ext.commands.context import Context
 import structlog
+from bot_config import client
 
 logger = structlog.get_logger(__name__)
 
@@ -60,7 +61,8 @@ async def send_anime_info(url, ctx, wish=False):
                                f'{title_string}{score_string}', file=f)
 
 
-async def handle_ranime(ctx: Context):
+@client.command(aliases=['ra'])
+async def ranime(ctx: Context):
     num_pages = config.MAL_MAX_ANIMES//config.MAL_ANIMES_PER_PAGE
     page = random.randint(0, num_pages)
     num_animes = config.MAL_ANIMES_PER_PAGE
@@ -77,7 +79,8 @@ async def handle_ranime(ctx: Context):
     await send_anime_info(rnd_link, ctx, wish=True)
 
 
-async def handle_anime(ctx: Context, name: str, *args):
+@client.command(aliases=['a'])
+async def anime(ctx: Context, name: str, *args):
     for arg in args:
         name += f' {arg}'
     if len(name) <= 2:
@@ -91,7 +94,8 @@ async def handle_anime(ctx: Context, name: str, *args):
     await send_anime_info(first_link, ctx)
 
 
-async def handle_manga(ctx: Context, name: str, *args):
+@client.command(aliases=['m', 'ma'])
+async def manga(ctx: Context, name: str, *args):
     for arg in args:
         name += f' {arg}'
     if len(name) <= 2:
