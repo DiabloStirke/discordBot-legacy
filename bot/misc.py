@@ -88,6 +88,17 @@ async def moneda(ctx):
         await ctx.channel.send('Cruz')
 
 
+@client.command(aliases=['pick', 'select', 'choice'])
+async def choose(ctx, *args):
+    if len(args) == 0:
+        await ctx.channel.send("I mean... given this wide list of options, I guess I'll choose nothing.")
+        return
+
+    arg_str = "".join(args)
+    str_list = arg_str.split(',') if ',' in arg_str else args
+    await ctx.channel.send(random.choice(str_list))
+
+
 @client.event
 async def on_message(message):
     # if message.author.id == 370953016951439361: #joey
