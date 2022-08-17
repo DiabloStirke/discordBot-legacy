@@ -97,7 +97,7 @@ async def choose(ctx, *args):
     arg_str = " ".join(args)
     str_list = arg_str.split(',') if ',' in arg_str else args
     
-    str_list = filter(lambda x: bool(x.strip()), str_list)
+    str_list = list(filter(lambda x: bool(x.strip()), str_list))
     
     if len(str_list) == 0:
         await ctx.channel.send("I mean... given this wide list of options, I guess I'll choose nothing.")
