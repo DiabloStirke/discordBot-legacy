@@ -28,3 +28,8 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run docker container
         run: docker-compose up -d --build --force-recreate
+        
+      - name: Cleanup docker  container
+        run: | 
+          chmod +x docker_cleanup.sh
+          ./docker_cleanup.sh
