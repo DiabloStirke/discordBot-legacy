@@ -94,7 +94,7 @@ async def choose(ctx, *args):
         await ctx.channel.send("I mean... given this wide list of options, I guess I'll choose nothing.")
         return
 
-    arg_str = "".join(args)
+    arg_str = " ".join(args)
     str_list = arg_str.split(',') if ',' in arg_str else args
     await ctx.channel.send(random.choice(str_list))
 
