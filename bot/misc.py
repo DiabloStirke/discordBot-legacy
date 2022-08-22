@@ -130,7 +130,7 @@ async def on_message(message):
         await ch.send(message.content)
         return
 
-    if 'zura' in message.content.lower.replace(' ', ''):
+    if 'zura' in message.content.lower().replace(' ', ''):
         await message.channel.send("Zura janai, Katsura da!")
 
     #  TODO Decide whether to delete or move somewhere else
