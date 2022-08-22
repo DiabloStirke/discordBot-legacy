@@ -134,7 +134,7 @@ async def on_message(message):
     is_zura = False
     for c in message.content.lower():
         if zura[0] == c:
-            zura.pop(c)
+            zura.pop(0)
             if len(zura) == 0:
                is_zura = True
                break
