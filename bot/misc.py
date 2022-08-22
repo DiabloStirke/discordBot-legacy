@@ -130,6 +130,9 @@ async def on_message(message):
         await ch.send(message.content)
         return
 
+    if 'zura' in message.content.lower.replace(' ', ''):
+        await message.channel.send("Zura janai, Katsura da!")
+
     #  TODO Decide whether to delete or move somewhere else
     # if 'abogado' in message.content.lower() and message.author.id == 369546906449346560:
     #     await message.channel.send(f"Hola, soy el abogado del Ruso.")
