@@ -140,7 +140,14 @@ async def on_message(message):
                break
     
     if is_zura:
+        zura_gifs = [
+            'https://tenor.com/view/gintama-punch-gif-9531089',
+            'https://tenor.com/view/anime-gintama-pat-punch-gif-7885609',
+            'https://tenor.com/view/gintama-katsura-zura-its-not-afro-its-katsura-gif-15425161',
+            'https://tenor.com/view/gintama-zura-anime-gif-9531133'
+        ]
         await message.channel.send("Zura janai, Katsura da!")
+        await message.channel.send(random.choice(zura_gifs))
 
     #  TODO Decide whether to delete or move somewhere else
     # if 'abogado' in message.content.lower() and message.author.id == 369546906449346560:
