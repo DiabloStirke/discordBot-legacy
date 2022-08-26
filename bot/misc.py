@@ -95,6 +95,18 @@ async def choose(ctx, *args):
         return
 
     arg_str = " ".join(args)
+
+    num_ls = arg_str.replace(" ", "").split('-')
+    if len(num_ls) == 2:
+        try:
+            num1 = int(num_ls[0])
+            num2 = int(num_ls[1])
+        except ValueError:
+            pass
+        else:
+            await ctx.channel.send(random.randint(num1, num2))
+            return
+
     str_list = arg_str.split(',') if ',' in arg_str else args
     
     str_list = list(filter(lambda x: bool(x.strip()), str_list))
