@@ -101,6 +101,8 @@ async def choose(ctx, *args):
         try:
             num1 = int(num_ls[0])
             num2 = int(num_ls[1])
+            if num2 < num1:
+                raise ValueError("First operand is greater than the second")
         except ValueError:
             pass
         else:
