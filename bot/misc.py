@@ -148,7 +148,7 @@ async def on_message(message):
     combos = {combo: {'combo': list(combo)} for combo in combos_str}
 
     for c in message.content.lower():
-        for combo in combos:
+        for combo in combos.values():
             if combo['combo'][0] == c:
                 combo['combo'].pop(0)
                 if len(combo['combo']) == 0:
@@ -169,6 +169,7 @@ async def on_message(message):
             'https://tenor.com/view/lolicon-feminist-gintama-meme-anime-gif-17004204'
         ]
         await message.channel.send('Lolicon janai, femenisto desu!')
+        await message.channel.send(random.choice(loli_gifs))
 
 
     #  TODO Decide whether to delete or move somewhere else
