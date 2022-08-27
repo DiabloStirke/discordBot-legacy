@@ -28,7 +28,7 @@ async def purei(ctx):
     await play_file(ctx, 'assets/nggyu.mp3')
 
 
-@client.commnad(aliases=['rap'])
+@client.command(aliases=['rap'])
 async def katsurap(ctx):
     await play_file(ctx, 'assets/katsurap.mp3')
 
