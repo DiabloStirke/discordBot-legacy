@@ -3,9 +3,7 @@ import discord
 from bot_config import client
 
 
-@client.command()
-async def purei(ctx):
-
+async def play_file(ctx, path):
     exe_path = None
     if platform == "linux" or platform == "linux2":
         exe_path = "/usr/bin/ffmpeg"
@@ -22,7 +20,17 @@ async def purei(ctx):
         await vc.connect()
         voice = ctx.voice_client
 
-    voice.play(discord.FFmpegPCMAudio(executable=exe_path, source='assets/nggyu.mp3'))
+    voice.play(discord.FFmpegPCMAudio(executable=exe_path, source=path))
+
+
+@client.command()
+async def purei(ctx):
+    await play_file(ctx, 'assets/nggyu.mp3')
+
+
+@client.commnad(aliases=['rap'])
+async def katsurap(ctx):
+    await play_file(ctx, 'assets/katsurap.mp3')
 
 
 @client.command()
