@@ -143,17 +143,18 @@ async def on_message(message):
         ch = important_stuff['current']
         await ch.send(message.content)
         return
-   
-    zura = ['z', 'u', 'r', 'a']
-    is_zura = False
+
+    combos_str = ['zura', 'loli']
+    combos = {combo: {'combo': list(combo)} for combo in combos_str}
+
     for c in message.content.lower():
-        if zura[0] == c:
-            zura.pop(0)
-            if len(zura) == 0:
-               is_zura = True
-               break
-    
-    if is_zura:
+        for combo in combos:
+            if combo['combo'][0] == c:
+                combo['combo'].pop(0)
+                if len(combo['combo']) == 0:
+                   combo['exists'] = True
+
+    if combos['zura'].get('exists', False):
         zura_gifs = [
             'https://tenor.com/view/gintama-punch-gif-9531089',
             'https://tenor.com/view/anime-gintama-pat-punch-gif-7885609',
@@ -162,6 +163,13 @@ async def on_message(message):
         ]
         await message.channel.send("Zura janai, Katsura da!")
         await message.channel.send(random.choice(zura_gifs))
+
+    if combos['loli'].get('exists', False):
+        loli_gifs = [
+            'https://tenor.com/view/lolicon-feminist-gintama-meme-anime-gif-17004204'
+        ]
+        await message.channel.send('Lolicon janai, femenisto desu!')
+
 
     #  TODO Decide whether to delete or move somewhere else
     # if 'abogado' in message.content.lower() and message.author.id == 369546906449346560:
