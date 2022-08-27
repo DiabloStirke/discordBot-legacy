@@ -149,7 +149,7 @@ async def on_message(message):
 
     for c in message.content.lower():
         for combo in combos.values():
-            if combo['combo'][0] == c:
+            if not combo.get('exists', False) and combo['combo'][0] == c:
                 combo['combo'].pop(0)
                 if len(combo['combo']) == 0:
                    combo['exists'] = True
