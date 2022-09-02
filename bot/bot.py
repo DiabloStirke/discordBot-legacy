@@ -9,9 +9,11 @@ import misc
 
 
 @client.event
-def on_ready():
+async def on_ready():
     dev_channel = client.get_channel(config.DEV_CHANNEL_ID)
-    await dev_channel.send("DIABLO Strike restarted and ready!")
+    await dev_channel.send(
+        f"DIABLO Strike restarted and ready! {f'Commit : {config.LAST_COMMIT_MSG}' if config.LAST_COMMIT_MSG else ''}"
+    )
 
 def main():
     client.run(config.DISCORD_BOT_TOKEN)
