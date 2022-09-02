@@ -6,6 +6,7 @@ import config
 import asyncio
 import random
 from structlog import get_logger
+from special_rules import check_choose_cheat
 
 logger = get_logger(__name__)
 
@@ -115,8 +116,14 @@ async def choose(ctx, *args):
     
     if len(str_list) == 0:
         await ctx.channel.send("I mean... given this wide list of options, I guess I'll choose nothing.")
-    
-    await ctx.channel.send(random.choice(str_list))
+
+    found_cheat, result = check_choose_cheat(str_list, ctx.author.id)
+
+    if found_cheat:
+        await ctx.channel.send(result)
+
+    else:
+        await ctx.channel.send(random.choice(str_list))
 
 
 @client.event
