@@ -126,6 +126,15 @@ async def choose(ctx, *args):
         await ctx.channel.send(random.choice(str_list))
 
 
+@client.command(aliases=['purge', 'clear'])
+async def clean(ctx, limit=1):
+    if limit > 100:
+        await ctx.channel.send("Woah, calm down a bit. That's too much, don't you think?")
+        return
+
+    ctx.channel.purge(limit=limit, bulk=True)
+
+
 @client.event
 async def on_message(message):
     # if message.author.id == 370953016951439361: #joey
