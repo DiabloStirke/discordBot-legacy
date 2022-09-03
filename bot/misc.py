@@ -132,7 +132,7 @@ async def clean(ctx, limit=1):
         await ctx.channel.send("Woah, calm down a bit. That's too much, don't you think?")
         return
 
-    await ctx.channel.purge(limit=limit, bulk=True)
+    await ctx.channel.purge(limit=limit+1, bulk=True)
 
 
 @client.event
