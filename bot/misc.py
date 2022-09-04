@@ -117,13 +117,13 @@ async def choose(ctx, *args):
     if len(str_list) == 0:
         await ctx.channel.send("I mean... given this wide list of options, I guess I'll choose nothing.")
 
-    found_cheat, result = check_choose_cheat(str_list, ctx.author.id)
+    # found_cheat, result = check_choose_cheat(str_list, ctx.author.id)
+    #
+    # if found_cheat:
+    #     await ctx.channel.send(result)
 
-    if found_cheat:
-        await ctx.channel.send(result)
-
-    else:
-        await ctx.channel.send(random.choice(str_list))
+    # else:
+    await ctx.channel.send(random.choice(str_list))
 
 
 @client.command(aliases=['purge', 'clear'])
