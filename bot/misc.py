@@ -180,7 +180,7 @@ async def on_message(message):
         await message.channel.send("Zura janai, Katsura da!")
         await message.channel.send(random.choice(zura_gifs))
 
-    if combos['loli'].get('exists', False):
+    if combos['lolicon'].get('exists', False):
         loli_gifs = [
             'https://tenor.com/view/lolicon-feminist-gintama-meme-anime-gif-17004204'
         ]
