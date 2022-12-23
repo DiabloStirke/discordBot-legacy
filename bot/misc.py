@@ -160,7 +160,7 @@ async def on_message(message):
         await ch.send(message.content)
         return
 
-    combos_str = ['zura', 'loli']
+    combos_str = ['zura', 'lolicon']
     combos = {combo: {'combo': list(combo)} for combo in combos_str}
 
     for c in message.content.lower():
