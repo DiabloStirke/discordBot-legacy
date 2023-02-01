@@ -36,7 +36,7 @@ size_map = {
 async def amplitugraphy(ctx, **args):
     msg = " ".join(args)
     if len(msg) == 0:
-        ctx.channel.send("Nothing to encode.")
+        await ctx.channel.send("Nothing to encode.")
         return
 
     invalid_chars = set()
@@ -76,9 +76,9 @@ async def amplitugraphy(ctx, **args):
     plt.savefig('assets/Ampltugraphy.png', dpi=300)
 
     if len(invalid_chars) > 0:
-        ctx.channel.send(f"Warning! Your message has some invalid characters {invalid_chars}. "
+        await ctx.channel.send(f"Warning! Your message has some invalid characters {invalid_chars}. "
                          f"Those will be omitted in the encoded picture.")
     with open('assets/Ampltugraphy.png', 'rb') as img:
         f = discord.File(img, filename='Ampltugraphy.png')
 
-    ctx.channel.send(file=f)
+    await ctx.channel.send(file=f)
