@@ -43,7 +43,7 @@ def amplitugraphy(ctx, **args):
     x_list = []
     y_list = []
     cumulative_x = 0
-    for char in msg:
+    for char in msg.lower():
         if char == ' ':
             cumulative_x += 3
             x_list += [cumulative_x - 3, cumulative_x]

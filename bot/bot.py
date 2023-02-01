@@ -6,6 +6,7 @@ import anime
 import punishment
 import music
 import misc
+import amplitugraphy
 
 
 @client.event
