@@ -33,7 +33,7 @@ size_map = {
 }
 
 @client.command(aliases=['amplitugrafia',  'amplitude', 'amplitud', 'ampl'])
-async def amplitugraphy(ctx, **args):
+async def amplitugraphy(ctx, *args):
 
     if len(args) == 0:
         await ctx.channel.send("Nothing to encode.")
