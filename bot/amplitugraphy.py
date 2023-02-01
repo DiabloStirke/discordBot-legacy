@@ -76,6 +76,8 @@ async def amplitugraphy(ctx, *args):
     plt.yticks(list(set([int(np.ceil(y)) for y in y_list])))
     plt.xticks(np.arange(0, x_list[-1], 3), labels=[])
     plt.savefig('assets/Ampltugraphy.png', dpi=300)
+    plt.cla()
+    plt.clf()
 
     if len(invalid_chars) > 0:
         await ctx.channel.send(f"Warning! Your message has some invalid characters {invalid_chars}. "
