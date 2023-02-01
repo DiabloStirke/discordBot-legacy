@@ -34,10 +34,12 @@ size_map = {
 
 @client.command(aliases=['amplitugrafia',  'amplitude', 'amplitud', 'ampl'])
 async def amplitugraphy(ctx, **args):
-    msg = " ".join(args)
-    if len(msg) == 0:
+
+    if len(args) == 0:
         await ctx.channel.send("Nothing to encode.")
         return
+
+    msg = " ".join(args)
 
     invalid_chars = set()
     x_list = []
