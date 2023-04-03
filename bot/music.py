@@ -41,5 +41,5 @@ async def fuckoff(ctx):
 
 @client.command()
 async def connectvc(ctx):
-    vc = ctx.author.voice_channel
+    vc = ctx.author.voice.channel
     await vc.connect()
