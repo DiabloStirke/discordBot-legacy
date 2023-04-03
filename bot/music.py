@@ -37,3 +37,9 @@ async def katsurap(ctx):
 async def fuckoff(ctx):
     if ctx.voice_client:
         await ctx.voice_client.disconnect()
+
+
+@client.command()
+async def connectvc(ctx):
+    vc = ctx.author.voice_channel
+    await vc.connect()
