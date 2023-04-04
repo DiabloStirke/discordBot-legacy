@@ -26,7 +26,7 @@ class Music(commands.Cog):
 
     def search_yt(self, query):
         if not valid_url(query):
-            query = f"ytsearch5:{query}"
+            query = f"ytsearch3:{query}"
 
         with YoutubeDL(self.YDL_OPTIONS) as ydl:
             try: 
