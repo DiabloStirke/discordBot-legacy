@@ -45,7 +45,7 @@ async def punishconf(ctx: Context, config: str, arg: Union[Role, str]):
     await ctx.channel.send('OK')
 
 
-@client.command(aliases=['gulag', 'g', 'p'])
+@client.command(aliases=['gulag', 'g'])
 async def punish(ctx: Context, user: Member):
     # get punishment role
     with open('data/punishment_roles.json', 'r') as f_punishment_roles:

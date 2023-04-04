@@ -19,8 +19,14 @@ async def on_ready():
         f"DIABLO Strike restarted and ready! {f'Commit : {config.LAST_COMMIT_MSG}' if config.LAST_COMMIT_MSG else ''}"
     )
 
+@client.event
+async def setup_hook():
+   await client.add_cog(music.Music(client))
+
+
 def main():
     client.run(config.DISCORD_BOT_TOKEN)
+    
 
 
 if __name__ == '__main__':
