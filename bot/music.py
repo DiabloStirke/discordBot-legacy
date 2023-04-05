@@ -222,7 +222,7 @@ async def purei(ctx):
 
 @client.command(aliases=['rap'])
 async def katsurap(ctx):
-    await play_file(ctx, 'bot/assets/katsurap.mp3')
+    await play_file(ctx, 'assets/katsurap.mp3')
 
 
 
