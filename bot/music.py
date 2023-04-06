@@ -1,9 +1,11 @@
 from sys import platform
 import discord
+import random
 from discord.ext import commands
 from bot_config import client
 from youtube_dl import YoutubeDL 
 from utils import valid_url, verbouse_time_from_seconds
+import asyncio
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -11,7 +13,7 @@ class Music(commands.Cog):
         
         self.music_queue = []
         self.confirmation_list = None
-
+        discord.AudioSource
         self.YDL_OPTIONS = {
             'format': 'bestaudio/best',
             'restrictfilenames': True,
@@ -41,32 +43,37 @@ class Music(commands.Cog):
             'web_url': entry['webpage_url'],
             'channel': entry['channel'],
             'duration': verbouse_time_from_seconds(entry['duration']),
-            'source': entry['formats'][0]['url']
+            'source': entry['formats'][0]['url'],
+            "is_fs": False
             } for entry in entries]
 
+
     def next_song(self):
-        if self.vc is None or not self.vc.is_connected():
+        if not self.connected():
             self.music_queue = []
 
         if len(self.music_queue) > 0:
             song = self.music_queue.pop(0)
-            self.vc.play(self._generate_audiosource(song['source']), after=lambda e: self.next_song())
+            self.vc.play(self._generate_audiosource(song['source'], song['is_fs']), after=lambda e: self.next_song())
 
-    async def play_music(self, ctx):
-        if self.vc is None or not self.vc.is_connected():
+    async def play_music(self, ctx, after=None):
+        if not self.connected():
             await ctx.author.voice.channel.connect()
             self.vc = ctx.voice_client
         
-        if self.vc.is_playing() or self.vc.is_paused() or len(self.music_queue) == 0:
+        if self.playing() or self.paused() or len(self.music_queue) == 0:
             if len(self.music_queue) > 0:
                 song = self.music_queue[-1]
                 embed = discord.Embed(title=None, description=f"Added [{song['title']}]({song['web_url']}) to the queue!", color=1675392)
                 await ctx.send(embed=embed)
             return
-        
+
         song = self.music_queue.pop(0)
         
-        self.vc.play(self._generate_audiosource(song['source']), after=lambda e: self.next_song())
+        if after is None:
+            after = lambda e: self.next_song()
+
+        self.vc.play(self._generate_audiosource(song['source'], song['is_fs']), after=after)
 
 
     @commands.command(name='play', aliases=["p"])
@@ -87,7 +94,7 @@ class Music(commands.Cog):
         if author_voice is None:
             await ctx.send("What's the point in playing music if you are not in any voice channel?")
             return
-        elif self.vc is not None and self.vc.channel.id != author_voice.channel.id:
+        elif self.connected() and self.vc.channel.id != author_voice.channel.id:
             await ctx.send("Won't do it. It seems like we are not on the same channel.")
             return
         elif not query and self.vc is not None and self.vc.is_paused():
@@ -138,10 +145,10 @@ class Music(commands.Cog):
 
     @commands.command(name='skip', aliases=["s"])
     async def skip(self, ctx):
-        if self.vc is None or not self.vc.is_connected():
+        if not self.connected():
             await ctx.send("I'm not connected to any VC")
             return
-        if not self.vc.is_playing() and not self.vc.is_paused():
+        if not self.playing() and not self.paused():
             await ctx.send("I'm not playing anything right now")
             return
 
@@ -149,19 +156,19 @@ class Music(commands.Cog):
     
     @commands.command(name='pause')
     async def pause(self, ctx):
-        if self.vc is None or not self.vc.is_connected():
+        if not self.connected():
             await ctx.send("I'm not connected to any VC")
             return
-        if not self.vc.is_playing() and not self.vc.is_paused():
+        if not self.playing() and not self.paused():
             await ctx.send("I'm not playing anything right now")
             return
-        if self.vc.is_paused():
+        if self.paused():
             await ctx.send("Already pasused")
             return
 
         self.vc.pause()
     
-    @commands.command(name='disconnect', alisase=['disc', 'fuckoff', 'exit'])
+    @commands.command(name='disconnect', aliases=['disc', 'fuckoff', 'exit'])
     async def disconnect(self, ctx):
         if ctx.voice_client:
             self.vc = None
@@ -169,6 +176,67 @@ class Music(commands.Cog):
             self.confirmation_list = None
             await ctx.voice_client.disconnect()
     
+    @commands.command()
+    async def purei(self, ctx):
+        if not await self.check_author_vc(ctx):
+            return
+        self.push_fs_song('assets/nggyu.mp3')
+        if self.playing() or self.paused():
+            self.vc.stop()
+            return
+        
+        await self.play_music(ctx)
+
+
+
+    @commands.command()
+    async def katsurap(self, ctx):
+        if not await self.check_author_vc(ctx):
+            return
+        self.push_fs_song('assets/katsurap.mp3')
+        if self.playing() or self.paused():
+            self.vc.stop()
+            return
+        
+        await self.play_music(ctx)
+
+    @commands.command(aliases=['test'])
+    async def togetha(self, ctx):
+        if not await self.check_author_vc(ctx):
+            return
+        
+        self.push_fs_song(f'assets/togetha{random.randint(1,2)}.mp3')
+        if self.playing() or self.paused():
+            self.vc.stop()
+            return
+
+        after = None
+        if not self.connected():
+            after = lambda e: asyncio.run_coroutine_threadsafe(ctx.voice_client.disconnect(), self.bot.loop)
+
+        await self.play_music(ctx, after)
+
+
+    def push_fs_song(self, path, title="", web_url="", channel="", duration=""):
+        song = {
+            'title': title, 
+            'web_url': web_url,
+            'channel': channel,
+            'duration': duration,
+            'source': path,
+            'is_fs': True
+        }
+        self.music_queue.insert(0, song)
+
+    async def check_author_vc(self, ctx):
+        author_voice = ctx.author.voice
+        if author_voice is None:
+            await ctx.send("What's the point in playing music if you are not in any voice channel?")
+            return False
+        elif self.connected() and self.vc.channel.id != author_voice.channel.id:
+            await ctx.send("Won't do it. It seems like we are not on the same channel.")
+            return False
+        return True
 
     @staticmethod
     def _generate_embed(search_results):
@@ -186,49 +254,23 @@ class Music(commands.Cog):
             )
         return embed
 
-    def _generate_audiosource(self, url):
+    def _generate_audiosource(self, url, is_fs=False):
         exe_path = None
         if platform == "linux" or platform == "linux2":
             exe_path = "/usr/bin/ffmpeg"
         elif platform == "win32" or platform == "win64":
-            exe_path = 'ffmpeg/bin/ffmpeg.exe'
+            exe_path = '../ffmpeg/bin/ffmpeg.exe'
         
+        if is_fs:
+            return discord.FFmpegPCMAudio(url, executable=exe_path)
+
         return discord.FFmpegPCMAudio(url, executable=exe_path, **self.FFMPEG_OPTIONS)
 
-async def play_file(ctx, path):
-    exe_path = None
-    if platform == "linux" or platform == "linux2":
-        exe_path = "/usr/bin/ffmpeg"
-    elif platform == "win32" or platform == "win64":
-        exe_path = 'ffmpeg/bin/ffmpeg.exe'
+    def connected(self):
+        return self.vc is not None and self.vc.is_connected()
 
-    if not exe_path:
-        ctx.channel.send("Something went wrong, I am unable to reproduce audio")
-        return
-
-    vc = ctx.author.voice.channel
-    voice = ctx.voice_client
-    if not voice:
-        await vc.connect()
-        voice = ctx.voice_client
-
-    voice.play(discord.FFmpegPCMAudio(executable=exe_path, source=path))
-
-
-@client.command()
-async def purei(ctx):
-    await play_file(ctx, 'assets/nggyu.mp3')
-
-
-@client.command(aliases=['rap'])
-async def katsurap(ctx):
-    await play_file(ctx, 'assets/katsurap.mp3')
-
-
-
-
-
-@client.command()
-async def connectvc(ctx):
-    vc = ctx.author.voice.channel
-    await vc.connect()
+    def playing(self):
+        return self.vc is not None and self.vc.is_playing()
+    
+    def paused(self):
+        return self.vc is not None and self.vc.is_paused()
