@@ -176,6 +176,18 @@ class Music(commands.Cog):
             self.confirmation_list = None
             await ctx.voice_client.disconnect()
     
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        if self.vc is None or self.vc.channel is None:
+            return
+        if len(self.vc.channel.members) > 1:
+            return
+        
+        await self.vc.disconnect()
+        self.vc = None
+        self.music_queue = []
+        self.confirmation_list = None
+
     @commands.command()
     async def purei(self, ctx):
         if not await self.check_author_vc(ctx):
@@ -215,7 +227,6 @@ class Music(commands.Cog):
             after = lambda e: asyncio.run_coroutine_threadsafe(ctx.voice_client.disconnect(), self.bot.loop)
 
         await self.play_music(ctx, after)
-
 
     def push_fs_song(self, path, title="", web_url="", channel="", duration=""):
         song = {
