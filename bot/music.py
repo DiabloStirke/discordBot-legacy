@@ -188,36 +188,42 @@ class Music(commands.Cog):
         self.music_queue = []
         self.confirmation_list = None
 
+# File system sound commands 
     @commands.command()
     async def purei(self, ctx):
-        if not await self.check_author_vc(ctx):
-            return
-        self.push_fs_song('assets/nggyu.mp3')
-        if self.playing() or self.paused():
-            self.vc.stop()
-            return
-        
-        await self.play_music(ctx)
-
-
+        await self.play_fs_song(ctx, 'assets/nggyu.mp3')
 
     @commands.command()
     async def katsurap(self, ctx):
+        await self.play_fs_song(ctx, 'assets/katsurap.mp3')
+
+# File system sound commands with a twist:
+#   - play as usual if connected to a vc
+#   - enter vc if not, play the song and leave vc
+
+    @commands.command()
+    async def togetha(self, ctx):
+        await self.play_fs_song_and_disc(ctx, f'assets/togetha{random.randint(1,2)}.mp3')
+
+    @commands.command()
+    async def shinda(self, ctx):
+        await self.play_fs_song_and_disc(ctx, f'assets/shinda.mp3')
+
+    async def play_fs_song(self, ctx, path):
         if not await self.check_author_vc(ctx):
             return
-        self.push_fs_song('assets/katsurap.mp3')
+        self.push_fs_song(path)
         if self.playing() or self.paused():
             self.vc.stop()
             return
         
         await self.play_music(ctx)
-
-    @commands.command(aliases=['test'])
-    async def togetha(self, ctx):
+    
+    async def play_fs_song_and_disc(self, ctx, path):
         if not await self.check_author_vc(ctx):
             return
         
-        self.push_fs_song(f'assets/togetha{random.randint(1,2)}.mp3')
+        self.push_fs_song(path)
         if self.playing() or self.paused():
             self.vc.stop()
             return
@@ -248,7 +254,7 @@ class Music(commands.Cog):
             await ctx.send("Won't do it. It seems like we are not on the same channel.")
             return False
         return True
-
+    
     @staticmethod
     def _generate_embed(search_results):
         embed = discord.Embed(
