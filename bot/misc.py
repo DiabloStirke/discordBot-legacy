@@ -134,6 +134,18 @@ async def clean(ctx, limit=1):
 
     await ctx.channel.purge(limit=limit+1, bulk=True)
 
+@client.command()
+async def silksong(ctx):
+    embed = discord.Embed(
+        title="Daily Silksong News",
+        url="https://www.youtube.com/@DailySilksongNews",
+        color=13587467,
+        description="There has been no news to report for silksong today",
+    )
+    embed.set_thumbnail(
+        url="https://sm.ign.com/t/ign_nordic/cover/h/hollow-kni/hollow-knight-silksong_46ud.128.jpg"
+    )
+    await ctx.channel.send(embed=embed)
 
 @client.event
 async def on_message(message):
