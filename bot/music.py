@@ -6,6 +6,7 @@ from bot_config import client
 from youtube_dl import YoutubeDL 
 from utils import valid_url, verbouse_time_from_seconds
 import asyncio
+from time import sleep
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -230,7 +231,10 @@ class Music(commands.Cog):
 
         after = None
         if not self.connected():
-            after = lambda e: asyncio.run_coroutine_threadsafe(ctx.voice_client.disconnect(), self.bot.loop)
+            async def wait_and_disc():
+                sleep(2)
+                await ctx.voice_client.disconnect()
+            after = lambda e: asyncio.run_coroutine_threadsafe(wait_and_disc(), self.bot.loop)
 
         await self.play_music(ctx, after)
 

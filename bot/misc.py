@@ -1,9 +1,10 @@
 import discord
 
 from bot_config import client
-from utils import find_vc
+from utils import find_vc, ordinal
 import config
 import asyncio
+import datetime
 import random
 from structlog import get_logger
 from special_rules import check_choose_cheat
@@ -136,11 +137,15 @@ async def clean(ctx, limit=1):
 
 @client.command()
 async def silksong(ctx):
+    last_news = datetime.datetime(year=2023, month=2, day=2)
+    today = datetime.date.today()
+    days = (today - last_news).days
     embed = discord.Embed(
         title="Daily Silksong News",
         url="https://www.youtube.com/@DailySilksongNews",
         color=13587467,
-        description="There has been no news to report for silksong today",
+        description=f"Today is {today.strftime('%B')}{ordinal(today.day)} {today.year}"
+                    +"There has been no news to report for silksong today\n\nThere were no news for the past {days}",
     )
     embed.set_thumbnail(
         url="https://sm.ign.com/t/ign_nordic/cover/h/hollow-kni/hollow-knight-silksong_46ud.128.jpg"
