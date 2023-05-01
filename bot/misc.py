@@ -145,7 +145,7 @@ async def silksong(ctx):
         url="https://www.youtube.com/@DailySilksongNews",
         color=13587467,
         description=f"Today is {today.strftime('%B')} {ordinal(today.day)} {today.year}. "
-                    +f"There has been no news to report for silksong today\n\nThere were no news for the past {days}",
+                    +f"There has been no news to report for silksong for today\n\nThere were no news for the past {days}",
     )
     embed.set_thumbnail(
         url="https://sm.ign.com/t/ign_nordic/cover/h/hollow-kni/hollow-knight-silksong_46ud.128.jpg"
