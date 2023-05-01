@@ -232,7 +232,7 @@ class Music(commands.Cog):
         after = None
         if not self.connected():
             async def wait_and_disc():
-                sleep(2)
+                sleep(0.75)
                 await ctx.voice_client.disconnect()
             after = lambda e: asyncio.run_coroutine_threadsafe(wait_and_disc(), self.bot.loop)
 
