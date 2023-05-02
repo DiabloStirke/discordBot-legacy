@@ -137,8 +137,8 @@ async def clean(ctx, limit=1):
 
 @client.command()
 async def silksong(ctx):
-    last_news = datetime.datetime(year=2023, month=2, day=2)
-    today = datetime.datetime.today()
+    last_news = datetime.datetime(year=2023, month=2, day=2, tzinfo=config.TZINFO)
+    today = datetime.datetime.now(tz=config.TZINFO)
     days = (today - last_news).days
     embed = discord.Embed(
         title="Daily Silksong News",
