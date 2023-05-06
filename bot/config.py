@@ -19,3 +19,4 @@ LAST_COMMIT_MSG = os.environ.get('COMMIT_MESSAGE', None)
 # My Anime List anime info
 MAL_MAX_ANIMES = 19342
 MAL_ANIMES_PER_PAGE = 50
+eeeeeee

@@ -26,6 +26,7 @@ class Music(commands.Cog):
         }
 
         self.vc = None
+        self._configure()
 
     def search_yt(self, query):
         if not valid_url(query):
@@ -210,6 +211,41 @@ class Music(commands.Cog):
     async def shinda(self, ctx):
         await self.play_fs_song_and_disc(ctx, f'assets/shinda.mp3')
 
+    @commands.command(aliases=["whoareyou"])
+    async def malenia(self, ctx):
+        await self.play_fs_song_and_disc(ctx, f'assets/malenia{random.randint(1,2)}.mp3')
+    
+    @commands.command(aliases=["cringe"])
+    async def atomic(self, ctx):
+        await self.play_fs_song_and_disc(ctx, 'assets/atomic.mp3')
+    
+
+# Ultra special files system sounds. Probably each one will have some different behaivour
+
+    @commands.command()
+    async def iam(self, ctx, *args):
+        i_can_be = list(self.i_can_be.keys())
+
+        if not args:
+            await ctx.send(f'I can be either {", ".join(i_can_be[:-1])} or {i_can_be[-1]}.')
+            return
+
+        if len(args) > 1:
+            await ctx.send("Unfortunately I only can be one entity at a time. It's not like I am an omnipresent being... yet...")
+            return
+
+        if args[0].lower() not in self.i_can_be:
+            await ctx.send(f"No, I'm not able to be {args[0].lower}. For now, I can be {', '.join(i_can_be[:-1])} and {i_can_be[-1]}")
+            return
+        
+        i_am = self.i_can_be[args[0]]
+
+        await ctx.send(i_am['message'])
+        
+        if i_am['sound'] is not None:
+            i_am['sound'](ctx)
+
+
     async def play_fs_song(self, ctx, path):
         if not await self.check_author_vc(ctx):
             return
@@ -295,3 +331,16 @@ class Music(commands.Cog):
     
     def paused(self):
         return self.vc is not None and self.vc.is_paused()
+    
+    # All command-related behaivour is defined here
+    def _configure(self):
+        self.i_can_be = {
+            'malenia': {
+                'sound': self.malenia,
+                'message': '**I am Malenia, Blade of Miquella.**'
+            },
+            'atomic': {
+                'sound': self.atomic,
+                'message': '**I... Am...** \\**wispers*\\* atomic'
+            }
+        }
