@@ -224,7 +224,7 @@ class Music(commands.Cog):
 
     @commands.command()
     async def iam(self, ctx, *args):
-        i_can_be = list(self.i_can_be.keys())
+        i_can_be = list(entity.capitalize() for entity in self.i_can_be.keys())
 
         if not args:
             await ctx.send(f'I can be either {", ".join(i_can_be[:-1])} or {i_can_be[-1]}.')
@@ -235,7 +235,7 @@ class Music(commands.Cog):
             return
 
         if args[0].lower() not in self.i_can_be:
-            await ctx.send(f"No, I'm not able to be {args[0].capitalize()}. For now, I can be {', '.join(i_can_be[:-1])} and {i_can_be[-1]}")
+            await ctx.send(f"No, I'm not able to be {args[0].capitalize()}. For now, I can be {', '.join(i_can_be[:-1])} and {i_can_be[-1]}.")
             return
         
         i_am = self.i_can_be[args[0]]
