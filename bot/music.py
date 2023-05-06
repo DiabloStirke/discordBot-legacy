@@ -235,15 +235,15 @@ class Music(commands.Cog):
             return
 
         if args[0].lower() not in self.i_can_be:
-            await ctx.send(f"No, I'm not able to be {args[0].lower}. For now, I can be {', '.join(i_can_be[:-1])} and {i_can_be[-1]}")
+            await ctx.send(f"No, I'm not able to be {args[0].capitalize()}. For now, I can be {', '.join(i_can_be[:-1])} and {i_can_be[-1]}")
             return
         
         i_am = self.i_can_be[args[0]]
 
         await ctx.send(i_am['message'])
-        
+
         if i_am['sound'] is not None:
-            i_am['sound'](ctx)
+           await i_am['sound'](ctx)
 
 
     async def play_fs_song(self, ctx, path):
