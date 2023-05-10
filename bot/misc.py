@@ -144,7 +144,7 @@ async def silksong(ctx):
 
     description = f"There has been no news to report for silksong for today.\n\nThere were no news for the past {days} days."
     if today.date() == last_news.date():
-        description = "There are silksong news today!. Matthew Griffin, marketing manager at Team Cherry published a tweet " + \
+        description = "There are silksong news today! \n Matthew Griffin, marketing manager at Team Cherry, published a tweet " + \
                       "saying that Silksong release will be delayed once more. Here is the tweet: " + \
                       "https://twitter.com/griffinmatta/status/1656106351184199680?cxt=HHwWgIDSyfb81fstAAAA"
 
