@@ -137,15 +137,25 @@ async def clean(ctx, limit=1):
 
 @client.command()
 async def silksong(ctx):
-    last_news = datetime.datetime(year=2023, month=2, day=2, tzinfo=config.TZINFO)
+    last_news = datetime.datetime(year=2023, month=5, day=10, tzinfo=config.TZINFO)
     today = datetime.datetime.now(tz=config.TZINFO)
     days = (today - last_news).days
+
+
+    description = f"There has been no news to report for silksong for today.\n\nThere were no news for the past {days} days."
+    if today.date() == last_news.date():
+        description = "There are silksong news today!. Matthew Griffin, marketing manager at Team Cherry published a tweet " + \
+                      "saying that Silksong release will be delayed once more. Here is the tweet: " + \
+                      "https://twitter.com/griffinmatta/status/1656106351184199680?cxt=HHwWgIDSyfb81fstAAAA"
+
+    
+
     embed = discord.Embed(
         title="Daily Silksong News",
         url="https://www.youtube.com/@DailySilksongNews",
         color=13587467,
         description=f"Today is {today.strftime('%B')} {ordinal(today.day)} {today.year}. "
-                    +f"There has been no news to report for silksong for today.\n\nThere were no news for the past {days} days.",
+                    +description,
     )
     embed.set_thumbnail(
         url="https://sm.ign.com/t/ign_nordic/cover/h/hollow-kni/hollow-knight-silksong_46ud.128.jpg"
