@@ -29,7 +29,7 @@ jobs:
       - name: Run docker container
         run: |
           echo "COMMIT_MESSAGE=${{ github.event.head_commit.message }}" >> .env
-          docker-compose up -d --build --force-recreate
+          docker compose up -d --build --force-recreate
         
       - name: Cleanup docker  container
         run: | 
