@@ -11,4 +11,4 @@ RUN pip install -r requirements.txt
 
 WORKDIR /discord_bot
 
-CMD python bot.py
+CMD python bot.py --sync
