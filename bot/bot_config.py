@@ -23,8 +23,11 @@ class Bot(commands.Bot):
             return
         
         dev_channel = self.get_channel(config.DEV_CHANNEL_ID)
+        commit_msg = ''
+        if config.LAST_COMMIT_MSG:
+            commit_msg = f'Commit {"on branch [" + config.LAST_COMMIT_BRANCH + "]" if config.LAST_COMMIT_BRANCH else ""}: {config.LAST_COMMIT_MSG}'
         await dev_channel.send(
-            f"DIABLO Strike restarted and ready! {f'Commit : {config.LAST_COMMIT_MSG}' if config.LAST_COMMIT_MSG else ''}"
+            f'DIABLO Strike restarted and ready! {commit_msg}'
         )
         
     async def setup_hook(self):
