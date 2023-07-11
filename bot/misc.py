@@ -171,21 +171,21 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    global important_stuff
+    # global important_stuff
 
-    if isinstance(message.channel, discord.DMChannel) and message.author.id == 369546906449346560:
-        logger.info(f'({message.author.id}) {message.author}: {message.content}')
-        # if message.author.id == 370953016951439361: #joey
-        #     await message.channel.send('No lo repetiré, está feo que robes waifus')
-        #     return
-        if '_change_channel' in message.content.lower():
-            channel_name = message.content.lower().split(' ')[1]
-            important_stuff['current'] = important_stuff[f'tl_{channel_name}']
-            await message.channel.send('OK')
-            return
-        ch = important_stuff['current']
-        await ch.send(message.content)
-        return
+    # if isinstance(message.channel, discord.DMChannel) and message.author.id == 369546906449346560:
+    #     logger.info(f'({message.author.id}) {message.author}: {message.content}')
+    #     # if message.author.id == 370953016951439361: #joey
+    #     #     await message.channel.send('No lo repetiré, está feo que robes waifus')
+    #     #     return
+    #     if '_change_channel' in message.content.lower():
+    #         channel_name = message.content.lower().split(' ')[1]
+    #         important_stuff['current'] = important_stuff[f'tl_{channel_name}']
+    #         await message.channel.send('OK')
+    #         return
+    #     ch = important_stuff['current']
+    #     await ch.send(message.content)
+    #     return
 
     combos_str = ['zura', 'lolicon']
     combos = {combo: {'combo': list(combo)} for combo in combos_str}

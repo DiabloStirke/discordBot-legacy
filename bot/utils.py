@@ -3,6 +3,8 @@ from lxml import etree
 from io import StringIO
 import re
 import time
+from urllib.parse import urlparse, parse_qs
+from typing import Tuple
 
 def get_webpage(url):
     response = requests.get(url)
@@ -30,6 +32,27 @@ def valid_url(url):
         r'(?::\d+)?' # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     return re.match(regex, url) is not None
+
+def valid_youtube_url(url: str) -> Tuple[bool, bool]:
+    """Check wether the url is a valid youtube video or playlist
+    
+    Returns a tuple of 2 booleans: (is_a_valid_video, is_a_valid_playlist)
+    """
+    regex = re.compile(
+        r'^(https?://)?(www\.)?youtu((.be)|(be\.com))(/[A-Z?=&\d\-_]+)+/?$', re.IGNORECASE
+    )
+    if re.match(regex, url) is None:
+        return False, False
+
+    parsed_url = urlparse(url)
+    query = parse_qs(parsed_url.query)
+
+
+    is_a_valid_video = 'v' in query and parsed_url.path == '/watch'
+    is_a_valid_playlist = 'list' in query and parsed_url.path in ['/watch', '/playlist']
+
+    return is_a_valid_video, is_a_valid_playlist
+
 
 def verbouse_time_from_seconds(seconds):
     t = time.gmtime(seconds)

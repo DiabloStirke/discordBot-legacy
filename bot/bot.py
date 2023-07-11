@@ -1,30 +1,26 @@
+import argparse
+
+import discord
 from bot_config import client
 import config
 
 # Bot command modules. They need to be included to process the @client.command decorator
 import anime
 import punishment
-import music
+from music import music
 import misc
 import amplitugraphy
-
-
-@client.event
-async def on_ready():
-    if config.DEV_CHANNEL_ID is None:
-        return
-    
-    dev_channel = client.get_channel(config.DEV_CHANNEL_ID)
-    await dev_channel.send(
-        f"DIABLO Strike restarted and ready! {f'Commit : {config.LAST_COMMIT_MSG}' if config.LAST_COMMIT_MSG else ''}"
-    )
-
-@client.event
-async def setup_hook():
-   await client.add_cog(music.Music(client))
-
+#import test_hybrid
 
 def main():
+    parser = argparse.ArgumentParser('bot', description='Main program that runs the discrod bot')
+    parser.add_argument('-s', '--sync', action='store_true', help='Synchronizes the command tree with servers for slash commands')
+    args = parser.parse_args()
+
+    client.sync = args.sync
+    client.cog_classes = [music.Music]
+    #client.groups = [test_hybrid.slash_group]
+
     client.run(config.DISCORD_BOT_TOKEN)
     
 
