@@ -137,7 +137,7 @@ async def clean(ctx, limit=1):
 
 @client.command()
 async def silksong(ctx):
-    last_news = datetime.datetime(year=2023, month=5, day=10, tzinfo=config.TZINFO)
+    last_news = datetime.datetime(year=2023, month=9, day=23, tzinfo=config.TZINFO)
     today = datetime.datetime.now(tz=config.TZINFO)
     days = (today - last_news).days
 
