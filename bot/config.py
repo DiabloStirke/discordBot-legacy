@@ -9,6 +9,9 @@ TZINFO = ZoneInfo(TZ)
 
 DISCORD_BOT_TOKEN = os.environ.get('DISCORD_BOT_TOKEN', 'OTIzNzE4Mjg5NzQ4Nzg3MjEz.YcUFsg.vpdcbzez_hXfycU5QEVy3-WFVkc')
 
+OPENAI_API_KEY = "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"
+OPENAI_ORG = "org-mHw7Y44IhkHO3hXMEL4SVU52"
+
 # Default channel name for ?shift command
 DEATH_CHANNEL = os.environ.get('DEATH_CHANNEL', 'Víctima del DIABLO STRIKE')
 
