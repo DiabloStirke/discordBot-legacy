@@ -424,7 +424,7 @@ class Music(commands.Cog):
 
 # Other helpers
 
-    def search_yt_dl(self, query:str, playlist=False, start=1, end=1):
+    def search_yt_dl(query: str, playlist=False, start=1, end=1):
 
         YDL_OPTIONS = {
             'format': 'bestaudio/best',
@@ -437,19 +437,20 @@ class Music(commands.Cog):
         if not query.startswith('https://') and not query.startswith('http://'):
             query = 'https://' + query
         with YoutubeDL(YDL_OPTIONS) as ydl:
-            try: 
+            try:
                 info = ydl.extract_info(query, download=False)
-            except Exception: 
+            except Exception:
                 return False
-            
+
         entries = info.get('entries', [info])
+        audio_formats = {f['format']: f['url'] for f in info['formats'] if "audio only (medium)" in f['format']}
 
         return [{
             'title': entry['title'], 
             'web_url': entry['webpage_url'],
             'channel': entry['channel'],
             'duration': verbouse_time_from_seconds(entry['duration']),
-            'source': entry['formats'][0]['url'],
+            'source': audio_formats[list(audio_formats.keys())[0]],
             "is_fs": False
             } for entry in entries]
 
@@ -467,7 +468,7 @@ class Music(commands.Cog):
                 value=f'Duration: {song["duration"]}\nURL: {song["web_url"]}',
                 inline=False
             )
-        
+
         extras = len(search_results) - 10
 
         if extras > 0:
