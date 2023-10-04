@@ -424,7 +424,7 @@ class Music(commands.Cog):
 
 # Other helpers
 
-    def search_yt_dl(query: str, playlist=False, start=1, end=1):
+    def search_yt_dl(self, query: str, playlist=False, start=1, end=1):
 
         YDL_OPTIONS = {
             'format': 'bestaudio/best',
