@@ -10,7 +10,7 @@ from bot_config import client
 from discord import app_commands
 from discord.ext import commands
 from utils import verbouse_time_from_seconds, valid_youtube_url
-from youtube_dl import YoutubeDL
+from yt_dlp import YoutubeDL
 from youtube_search import YoutubeSearch
 
 import music.ui as mui
