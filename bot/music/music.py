@@ -66,7 +66,7 @@ class Music(commands.Cog):
 
         await interaction.response.defer(ephemeral=False)
 
-        songs = self.search_yt_dl(youtube_url)
+        songs = await self.search_yt_dl(youtube_url)
 
         if not songs:
             await interaction.followup.send("No such video exists", ephemeral=True)
@@ -167,7 +167,7 @@ class Music(commands.Cog):
 
         await interaction.response.defer(ephemeral=False)
 
-        songs = self.search_yt_dl(youtube_url, playlist=True, start=first_video, end=last_video)
+        songs = await self.search_yt_dl(youtube_url, playlist=True, start=first_video, end=last_video)
 
         if not songs: # "not song" is also true for empty list ({})
             await  interaction.followup.send("No such playlist exists")
@@ -424,7 +424,7 @@ class Music(commands.Cog):
 
 # Other helpers
 
-    def search_yt_dl(self, query: str, playlist=False, start=1, end=1):
+    async def search_yt_dl(self, query: str, playlist=False, start=1, end=1):
 
         YDL_OPTIONS = {
             'format': 'bestaudio/best',

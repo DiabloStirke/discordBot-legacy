@@ -7,7 +7,7 @@ import asyncio
 import datetime
 import random
 from structlog import get_logger
-from special_rules import check_choose_cheat
+from special_rules import check_choose_cheat # noqa F401
 
 logger = get_logger(__name__)
 
@@ -112,9 +112,9 @@ async def choose(ctx, *args):
             return
 
     str_list = arg_str.split(',') if ',' in arg_str else args
-    
+
     str_list = list(filter(lambda x: bool(x.strip()), str_list))
-    
+
     if len(str_list) == 0:
         await ctx.channel.send("I mean... given this wide list of options, I guess I'll choose nothing.")
 
@@ -148,7 +148,6 @@ async def silksong(ctx):
                       "they added a new game logo required for seasonal steam events and updated the background " + \
                       "image of the page.\n\n More info: https://youtu.be/MXwgo-JHYPQ?si=hsVv5Y7RXVmX8RlH"
 
-    
 
     embed = discord.Embed(
         title="Daily Silksong News",
@@ -161,6 +160,7 @@ async def silksong(ctx):
         url="https://sm.ign.com/t/ign_nordic/cover/h/hollow-kni/hollow-knight-silksong_46ud.128.jpg"
     )
     await ctx.channel.send(embed=embed)
+
 
 @client.event
 async def on_message(message):
