@@ -16,7 +16,7 @@ import music.ui as mui
 
 class Music(commands.Cog):
 
-    SONGS_PER_QUERY = 40
+    SONGS_PER_QUERY = 50
 
     def __init__(self, bot):
         self.bot = bot
@@ -166,8 +166,8 @@ class Music(commands.Cog):
 
         songs = await self.search_yt_dl(youtube_url, playlist=True, start=first_video, end=last_video)
 
-        if not songs: # "not song" is also true for empty list ({})
-            await  interaction.followup.send("No such playlist exists")
+        if not songs:  # "not song" is also true for empty list ({})
+            await interaction.followup.send("No such playlist exists")
             return
 
         for song in songs:
@@ -433,16 +433,20 @@ class Music(commands.Cog):
                 return False
 
         entries = info.get('entries', [info])
-        audio_formats = {f['format']: f['url'] for f in info['formats'] if "audio only (medium)" in f['format']}
+        entry_formats = []
+        for entry in entries:
+           entry_formats.append(
+               {f['format']: f['url'] for f in entry['formats'] if "audio only (medium)" in f['format']}
+            )
 
         return [{
-            'title': entry['title'],
-            'web_url': entry['webpage_url'],
-            'channel': entry['channel'],
-            'duration': verbouse_time_from_seconds(entry['duration']),
-            'source': audio_formats[list(audio_formats.keys())[0]],
+            'title': entry[0]['title'],
+            'web_url': entry[0]['webpage_url'],
+            'channel': entry[0]['channel'],
+            'duration': verbouse_time_from_seconds(entry[0]['duration']),
+            'source': entry[1][list(entry[1].keys())[0]],
             "is_fs": False
-            } for entry in entries]
+            } for entry in zip(entries, entry_formats)]
 
     @staticmethod
     def _generate_embed(search_results):
