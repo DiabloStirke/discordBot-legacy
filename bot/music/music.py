@@ -1,19 +1,18 @@
 import asyncio
-import math
 import random
 from sys import platform
 from time import sleep
 from urllib.parse import urlparse, parse_qs
 
 import discord
-from bot_config import client
 from discord import app_commands
 from discord.ext import commands
-from utils import verbouse_time_from_seconds, valid_youtube_url
+from utils import verbouse_time_from_seconds, valid_youtube_url, to_thread
 from yt_dlp import YoutubeDL
 from youtube_search import YoutubeSearch
 
 import music.ui as mui
+
 
 class Music(commands.Cog):
 
@@ -21,7 +20,7 @@ class Music(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        
+
         self.music_queue = []
         self.confirmation_list = None
         self.music_queue_size = 100
@@ -33,15 +32,14 @@ class Music(commands.Cog):
             'options': '-vn'
         }
 
-        self.vc = None # voice channel 
-        self.ac = None # announcement channel (Now playing message)
-
+        self.vc = None  # voice channel
+        self.ac = None  # announcement channel (Now playing message)
 
     @app_commands.command(name='play')
     @app_commands.rename(youtube_url='youtube_video')
     async def play(self, interaction: discord.Interaction, youtube_url: str):
-        """Play a song from youtube. 
-        
+        """Play a song from youtube.
+
         Parameters
         -----------
         youtube_url: str
@@ -55,7 +53,7 @@ class Music(commands.Cog):
             self.vc.resume()
             await interaction.response.send_message('Resuming the music player')
             return
-        
+
         if len(self.music_queue) >= self.music_queue_size:
             await interaction.response.send_message(f"The current music queue is at is's maximum ({self.music_queue_size} songs)", ephemeral=True)
             return
@@ -71,7 +69,7 @@ class Music(commands.Cog):
         if not songs:
             await interaction.followup.send("No such video exists", ephemeral=True)
             return
-        
+
         song = songs[0]
 
         self.music_queue.append(song)
@@ -82,7 +80,7 @@ class Music(commands.Cog):
         await self.play_music(interaction)
 
         await self.views.queue_view.on_queue_update(self.music_queue)
-        
+
 
     @play.autocomplete('youtube_url')
     async def _songs_query(self, interaction: discord.Interaction, current):
@@ -91,12 +89,12 @@ class Music(commands.Cog):
             choices.append(
                 app_commands.Choice(name='Resume the music player', value='resume')
             )
-            
+
         if not current:
             return choices
 
         search = YoutubeSearch(current, max_results=5).to_dict()
-        
+
         for video in search:
             choices.append(app_commands.Choice(name=video['title'], value='https://www.youtube.com/watch?v='+video['id']))
 
@@ -105,15 +103,15 @@ class Music(commands.Cog):
     @app_commands.command(name='playlist')
     @app_commands.rename(youtube_url='youtube_playlist')
     async def playlist(
-        self, 
-        interaction: discord.Interaction, 
-        youtube_url: str, 
+        self,
+        interaction: discord.Interaction,
+        youtube_url: str,
         first_video: app_commands.Range[int, 1] = None,
         last_video: app_commands.Range[int, 1] = None,
-        num_videos: app_commands.Range[int, 1, SONGS_PER_QUERY] = SONGS_PER_QUERY 
-        ):
+        num_videos: app_commands.Range[int, 1, SONGS_PER_QUERY] = SONGS_PER_QUERY
+    ):
         """Play an entire playlist from youtube. Downloading of the playlist info may take a while.
-        
+
         Parameters
         -----------
         youtube_url: str
@@ -137,15 +135,14 @@ class Music(commands.Cog):
             url = urlparse(youtube_url)
             query = parse_qs(url.query)
             first_video = int(query['index'][0]) if query.get('index', None) is not None else 1
-        
-        
+
         if not last_video:
             last_video = first_video + num_videos - 1
 
         if first_video > last_video:
             await interaction.response.send_message('last_video can not be below the first_video', ephemeral=True)
             return
-        
+
         real_num_songs = last_video - first_video + 1
 
         songs_over_query_limit = real_num_songs - self.SONGS_PER_QUERY
@@ -175,7 +172,7 @@ class Music(commands.Cog):
 
         for song in songs:
             self.music_queue.append(song)
-        
+
         embed = self._generate_embed(songs)
         await interaction.followup.send(embed=embed)
 
@@ -195,7 +192,7 @@ class Music(commands.Cog):
         if not self.connected():
             await interaction.response.send_message("I'm not connected to any VC", ephemeral=True)
             return
-        
+
         if not self.playing() and not self.paused():
             await interaction.response.send_message("I'm not playing anything right now", ephemeral=True)
             return
@@ -234,13 +231,11 @@ class Music(commands.Cog):
         # I defenetly wasn't planning to move the whole queue logic to the QueueView class but here we are... 
         # Although the idea of having the view based commands detached from the rest of the logic isn't that bad in my opinion...
         self.views.queue_view = await self.views.queue_view.new_view(interaction=interaction, queue=self.music_queue)
-        
-
 
     @app_commands.command(name='pause')
     async def pause(self, interaction:discord.Interaction):
         """Pauses the music player
-        
+
         """
         if not self.connected():
             await interaction.response.send_message("I'm not connected to any VC", ephemeral=True)
@@ -255,7 +250,7 @@ class Music(commands.Cog):
         self.vc.pause()
 
         await interaction.response.send_message("Player paused")
-    
+
     @app_commands.command(name='disconnect')
     async def disconnect(self, interaction: discord.Interaction):
         """ Disconnect from the voice channel
@@ -267,17 +262,16 @@ class Music(commands.Cog):
             self.confirmation_list = None
             await interaction.response.send_message("Disconnected")
             return
-        
+
         await interaction.response.send_message("I am not connected to any vc", ephemeral=True)
-        
-    
+
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         if self.vc is None or self.vc.channel is None:
             return
         if len(self.vc.channel.members) > 1:
             return
-        
+
         await self.vc.disconnect()
         self.vc = None
         self.music_queue = []
@@ -322,7 +316,7 @@ class Music(commands.Cog):
         """
         await interaction.response.send_message("Malenia... so hard...", silent=True, ephemeral=True, delete_after=0)
         await self.play_fs_song_and_disc(interaction, f'assets/malenia{random.randint(1,2)}.mp3')
-    
+
     @app_commands.command(name='atomic')
     async def atomic(self, interaction: discord.Interaction):
         """ I... AM... *whispers* atomic
@@ -334,19 +328,18 @@ class Music(commands.Cog):
 
     async def play_music(self, interaction:discord.Interaction, after=None):
         if self.playing() or self.paused():
-            return 
+            return
 
         if not self.connected():
             self.vc = await interaction.user.voice.channel.connect()
-            
+
         song = self.music_queue.pop(0)
-        
+
         if after is None:
             after = lambda e: asyncio.run_coroutine_threadsafe(self.next_song(), self.bot.loop)
 
         self.vc.play(self._generate_audiosource(song['source'], song['is_fs']), after=after)
 
- 
     async def next_song(self):
         if not self.connected():
             self.music_queue = []
@@ -357,8 +350,6 @@ class Music(commands.Cog):
             self.vc.play(self._generate_audiosource(song['source'], song['is_fs']), after=after)
 
         await self.views.queue_view.on_queue_update(self.music_queue)
-        
-
 
 # File system song helpers
     async def play_fs_song(self, interaction: discord.Interaction, path):
@@ -368,14 +359,13 @@ class Music(commands.Cog):
         if self.playing() or self.paused():
             self.vc.stop()
             return
-        
+
         await self.play_music(interaction)
 
-    
     async def play_fs_song_and_disc(self, interaction: discord.Interaction, path):
         if not await self.check_author_vc(interaction):
             return
-        
+
         self.push_fs_song(path)
         if self.playing() or self.paused():
             self.vc.stop()
@@ -401,7 +391,7 @@ class Music(commands.Cog):
         }
         self.music_queue.insert(0, song)
 
-# Validators 
+# Validators
     async def check_author_vc(self, interaction: discord.Interaction):
         author_voice = interaction.user.voice
         if author_voice is None:
@@ -411,20 +401,20 @@ class Music(commands.Cog):
             await interaction.response.send_message("Won't do it. It seems like we are not on the same channel.")
             return False
         return True
-    
+
 # Bot voice channel status helpers
     def connected(self):
         return self.vc is not None and self.vc.is_connected()
 
     def playing(self):
         return self.vc is not None and self.vc.is_playing()
-    
+
     def paused(self):
         return self.vc is not None and self.vc.is_paused()
 
 # Other helpers
-
-    async def search_yt_dl(self, query: str, playlist=False, start=1, end=1):
+    @to_thread
+    def search_yt_dl(self, query: str, playlist=False, start=1, end=1):
 
         YDL_OPTIONS = {
             'format': 'bestaudio/best',
@@ -446,7 +436,7 @@ class Music(commands.Cog):
         audio_formats = {f['format']: f['url'] for f in info['formats'] if "audio only (medium)" in f['format']}
 
         return [{
-            'title': entry['title'], 
+            'title': entry['title'],
             'web_url': entry['webpage_url'],
             'channel': entry['channel'],
             'duration': verbouse_time_from_seconds(entry['duration']),
@@ -485,7 +475,7 @@ class Music(commands.Cog):
             exe_path = "/usr/bin/ffmpeg"
         elif platform == "win32" or platform == "win64":
             exe_path = '../ffmpeg/bin/ffmpeg.exe'
-        
+
         if is_fs:
             return discord.FFmpegPCMAudio(url, executable=exe_path)
 

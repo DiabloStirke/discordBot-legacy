@@ -4,7 +4,10 @@ from io import StringIO
 import re
 import time
 from urllib.parse import urlparse, parse_qs
-from typing import Tuple
+from typing import Tuple, Callable, Coroutine
+import functools
+import asyncio
+
 
 def get_webpage(url):
     response = requests.get(url)
@@ -25,17 +28,18 @@ def find_vc(guild, name):
 
 def valid_url(url):
     regex = re.compile(
-        r'^(?:http)s?://' # http:// or https://
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
-        r'localhost|' #localhost...
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
-        r'(?::\d+)?' # optional port
+        r'^(?:http)s?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # noqa: E501 /// domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+        r'(?::\d+)?'  # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     return re.match(regex, url) is not None
 
+
 def valid_youtube_url(url: str) -> Tuple[bool, bool]:
     """Check wether the url is a valid youtube video or playlist
-    
+
     Returns a tuple of 2 booleans: (is_a_valid_video, is_a_valid_playlist)
     """
     regex = re.compile(
@@ -47,7 +51,6 @@ def valid_youtube_url(url: str) -> Tuple[bool, bool]:
     parsed_url = urlparse(url)
     query = parse_qs(parsed_url.query)
 
-
     is_a_valid_video = 'v' in query and parsed_url.path == '/watch'
     is_a_valid_playlist = 'list' in query and parsed_url.path in ['/watch', '/playlist']
 
@@ -57,14 +60,22 @@ def valid_youtube_url(url: str) -> Tuple[bool, bool]:
 def verbouse_time_from_seconds(seconds):
     t = time.gmtime(seconds)
     thstr = "" if t.tm_hour == 0 else f'{t.tm_hour} {"hours" if t.tm_hour != 1 else "hour"} '
-    tmstr = "" if t.tm_min == 0 and not thstr else f'{t.tm_min} {"minutes" if t.tm_min != 1 else "minute"} '
+    tmstr = "" if t.tm_min == 0 and not thstr else f'{t.tm_min} {"minutes" if t.tm_min != 1 else "minute"} '  # noqa: E501
     tsstr = f'{t.tm_sec} {"seconds" if t.tm_sec != 1 else "second"}'
-    
+
     return thstr + tmstr + tsstr
-    
+
+
 def ordinal(n: int):
     if 11 <= (n % 100) <= 13:
         suffix = 'th'
     else:
         suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
     return str(n) + suffix
+
+
+def to_thread(func: Callable) -> Coroutine:
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        return await asyncio.to_thread(func, *args, **kwargs)
+    return wrapper
