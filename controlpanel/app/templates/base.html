@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title> {% block title %}{% endblock %}{% if self.title() %} - {% endif %}Diablo Strike Control Panel</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        {% block css %}
+        <link rel="stylesheet" href="/css/base.css">
+        {% block extra_css %}{% endblock %}
+        {% endblock %}
+
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}
+        <nav class="navbar bg-body-tertiary">
+            {% block nav %}
+            <div class="container-fluid">
+                <div class="navbar-brand">
+                    <a href='/'><img src='/DS.webp' class="img-fluid" style="max-width: 50px"></img></a>
+                    {% if self.title() %}
+                        <div class="d-none d-sm-inline-block">
+                            <span  class="badge bg-primary">Diablo Strike Control Panel</span>
+                            <span class="fw-bold"> > </span>
+                        </div>
+                        <span class="badge bg-primary">{{ self.title() }}</span>
+                    {% else %}
+                        <span  class="badge bg-primary">Diablo Strike Control Panel</span>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex">
+                    <div class="container-fluid ps-0">
+                        <div class="row flex-nowrap g-3">
+                            <div class="col-auto">
+                                <img src='{{ user_avatar }}' class="rounded-circle" style="max-width: 50px;"></img>
+                                <span class="badge bg-secondary ms-1">{{ username }}</span>    
+                            </div>
+                            <div class="col-auto align-self-center">
+                            <a href='/logout' class="btn btn-outline-secondary btn-sm">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+        </nav>
+        {% if self.title() %}
+        <div class="mt-3 mb-3 ms-4 ">
+            <a href="/" class="btn btn-outline-primary">Back to Main Page</a>
+        </div>
+        {% endif %} 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% set category, message = messages[0] %}
+                {% if category == 'error' %}
+                    {% set alert_class, icon_class = 'danger', 'bi-x-circle-fill' %}
+                {% else %}
+                    {% set alert_class, icon_class = 'success', 'bi-check-circle-fill' %}
+                {% endif %}
+       
+            <div class="alert alert-{{ alert_class }} ms-5 me-5 mt-2" role="alert">
+                <i class="bi {{ icon_class }}"></i>
+                {{ message }}
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+        {% block js %}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>        
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script>
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+        </script>
+        {% endblock %}
+        {% block extra_js %}{% endblock %}
+        {% endblock %}
+    </body>
+</html>

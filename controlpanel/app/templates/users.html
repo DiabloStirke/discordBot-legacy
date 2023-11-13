@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %} Users {% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 pe-4 ps-4">
+            <h1>Users</h1>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <section class="intro">
+                <div class="container" style="max-width: 1700px;">
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <div class="card shadow-2-strong">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless mb-0">
+                                            <colgroup>
+                                                <col span="1" style="width: 30%">
+                                                <col span="1" style="width: 30%">
+                                                <col span="1" style="width: 30%">
+                                                <col span="1" style="width: 10%">
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Username</th>
+                                                    <th scope="col">Role</th>
+                                                    <th scope="col">Discord-ID</th>
+                                                    <th scope="col">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <form action="/users/new" method="post">
+                                                        <td scope="row" class="ps-1">
+                                                            <div class="input-group">
+                                                                <div class="input-group-text">
+                                                                    <input id="cb-new" class="form-check-input mt-0" type="checkbox" checked="checked" name="from_discord">
+                                                                    <label class="form-check-label ms-2 text-nowrap" for="cb-new" name='from_discord'>
+                                                                        From Discord 
+                                                                        <div class="d-inline" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Set the username equal to the username of the Discord account on their next login">
+                                                                            <i class="bi bi-info-circle"></i>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                                <input type="text" class="form-control" name="username" placeholder="Username">
+                                                            </div>
+                                                        </td>
+                                                        
+                                                        <td class="ps-1">
+                                                            <select class="form-select" name="role">
+                                                                <option value="User">User</option>
+                                                                <option value="Staff">Staff</option>
+                                                                <option value="Admin">Admin</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="ps-1">
+                                                            <input type="number" class="form-control" name="discord_id" placeholder="Discord-ID" required>                                                        
+                                                        </td>
+                                                        <td class="align-middle">
+                                                            <button type="submit" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add" >
+                                                                <i class="bi bi-plus-square"></i>
+                                                            </button>
+                                                        </td>
+                                                    </form>
+                                                </tr>
+                                            {% for user in users %}
+                                                <tr id="tr-dc-{{ user.id }}">
+                                                    {% if user.username %}
+                                                        <td>
+                                                            {{ user.username }}
+                                                            {% if not user.use_discord_username %}
+                                                                <div class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="This username is set to not match the Discord account's username.">
+                                                                    Custom
+                                                                </div>
+                                                            {% elif not user.username_matches_discord %}
+                                                                <div class="badge bg-warning" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="This username is set to match the Discord account's username but was not verified yet.">
+                                                                    Unverified
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="This username matches the Discord account's username">
+                                                                    Verified
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                    {% else %}
+                                                    <td style="color:gray;">
+                                                        &lt;None&gt;
+                                                    </td>
+                                                    {% endif %}
+                                                    <td>{{ user.role.value }}</td>
+                                                    <td>{{ user.id }}</td>
+                                                    <td class="d-flex flex-nowrap">
+                                                        <div class="btn btn-outline-warning btn-sm edit-btn me-1" id="edit-btn-dc-{{ user.id }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </div>
+                                                        <form action="/users/{{ user.id }}/delete" method="post">
+                                                            <button class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                <tr id="tr-edit-dc-{{ user.id }}" hidden="" nowrap="nowrap">
+                                                    <form action="/users/{{ user.id }}/edit" method="post">
+                                                        <td scope="row" class="ps-1">
+                                                            <div class="input-group">
+                                                                <div class="input-group-text">
+                                                                    <input id="cb-dc-{{ user.id }}" class="form-check-input mt-0" type="checkbox" checked="checked" name="from_discord">
+                                                                    <label class="form-check-label ms-2 text-nowrap" for="cb-dc-{{ user.id }}">
+                                                                        From Discord 
+                                                                        <div class="d-inline" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Set the username equal to the username of the Discord account on their next login">
+                                                                            <i class="bi bi-info-circle"></i>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                                <input type="text" class="form-control" name="username" placeholder="Username" value="{{ user.username if user.username else ''}}">
+                                                            </div>
+                                                        </td>
+                                                        <td class="ps-1">
+                                                            <select class="form-select" name="role">
+                                                                <option value="User" {% if user.role.value == 'User' %} selected {% endif %}>User</option>
+                                                                <option value="Staff" {% if user.role.value == 'Staff' %} selected {% endif %}>Staff</option>
+                                                                <option value="Admin" {% if user.role.value == 'Admin' %} selected {% endif %}>Admin</option>
+                                                            </select>
+                                                        </td>
+                                                        <td><input type="text" class="form-control" value="{{ user.id }}" disabled readonly></td>
+                                                        <td class="d-flex flex-nowrap">
+                                                            <button type="submit" class="btn btn-outline-success btn-sm me-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Save" >
+                                                                <i class="bi bi-floppy"></i>
+                                                            </button>
+                                                            <div class="btn btn-outline-danger btn-sm cancel-btn" id="cancel-btn-dc-{{ user.id }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cancel">
+                                                                <i class="bi bi-x-square"></i>
+                                                            </div>
+                                                        </td>
+                                                    </form>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/users.js"></script>
+{% endblock %}
