@@ -40,3 +40,11 @@ def get_main_context():
 def tz_now(tz='Europe/Madrid'):
     tz = ZoneInfo(tz)
     return datetime.now(tz=tz)
+
+
+def ordinal(n: int):
+    if 11 <= (n % 100) <= 13:
+        suffix = 'th'
+    else:
+        suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
+    return str(n) + suffix
