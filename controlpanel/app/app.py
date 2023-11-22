@@ -7,5 +7,4 @@ app = Flask(__name__, static_url_path='', static_folder='static')
 app.config['SECRET_KEY'] = 'bad_secret'  # TODO: Change this
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
-print(app.config['SQLALCHEMY_DATABASE_URI'])
 db = SQLAlchemy(app)

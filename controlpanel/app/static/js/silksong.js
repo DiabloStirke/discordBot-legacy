@@ -1,5 +1,3 @@
-
-
 function parseAsterisks(text){
     //"".replace(new RegExp("<br>$"), "").replaceAll("<br>", "\n");
     //let res = text.replaceAll(/\*\*\*((?:[^*\\]|\\\*)+)\*\*\*/g, "<b><i>$1</i></b>");
@@ -60,13 +58,26 @@ function formatDate(date){
     return month + " " + ordinal(day) + " " + year;
 }
 
+function formatNewsDateMessage(date){
+    let formatted_date = formatDate(date);
+    let today = new Date();
+    let msg = `Today is ${formatted_date}. There are silksong news today! `;
+    if (daysBetween(date, today) === 1){
+        msg = `Yesterday was ${formatted_date}. There were silksong news yesterday! `;
+    }
+    else if (daysBetween(date, today) > 1){
+        msg = `The date was ${formatted_date}. There were silksong news on that day! `;
+    }
+    return msg;
+}
+
 $(function() {
 
     $(document).on('paste', 'p[contenteditable]', function(e) {
         e.preventDefault();
-        let clipboardData = e.clipboardData || e.originalEvent.clipboardData || window.clipboardData;
-        let text = clipboardData.getData('text/plain');
-        let selection = window.getSelection()
+        const clipboardData = e.clipboardData || e.originalEvent.clipboardData || window.clipboardData;
+        const text = clipboardData.getData('text/plain');
+        const selection = window.getSelection()
         range = selection.getRangeAt(0);
         range.deleteContents();
         range.insertNode(document.createTextNode(text));
@@ -75,9 +86,10 @@ $(function() {
     });
 
     $(".dc-embed-preview-btn").click(function(e) {
-        let preview_btn_id = "#" + this.id;
-        let edit_btn_id = "#" + this.id.replace(/-preview-btn$/, '-edit-btn');
-        let embed_id = "#" + this.id.replace(/-preview-btn$/, '');
+        const preview_btn_id = "#" + this.id;
+        const embed_id = "#" + this.id.replace(/-preview-btn$/, '');
+        const edit_btn_id = embed_id + '-edit-btn';
+        const date_btn_id = embed_id + '-date-btn';
 
         let html = $(embed_id).html()
         let original_data = html.replace(/<br>^/, '').replaceAll(/<br>/g, '\n');
@@ -90,20 +102,21 @@ $(function() {
         $(embed_id).html(html);
         $(edit_btn_id).prop('disabled', false);
         $(preview_btn_id).prop('disabled', true);
-        console.log("embed_id: " + embed_id + " preview_btn_id: " + preview_btn_id + " edit_btn_id: " + edit_btn_id);
+        $(date_btn_id).invisible();
     });
     $(".dc-embed-edit-btn").click(function(e) {
-        let edit_btn_id = "#" + this.id;
-        let preview_btn_id = "#" + this.id.replace(/-edit-btn$/, '-preview-btn');
-        let embed_id = "#" + this.id.replace(/-edit-btn$/, '');
+        const edit_btn_id = "#" + this.id;
+        const embed_id = "#" + this.id.replace(/-edit-btn$/, '');
+        const preview_btn_id = embed_id + '-preview-btn';
+        const date_btn_id = embed_id  + '-date-btn';
 
         let original_data = $(embed_id).attr('data-original');
         original_data = removeTags(original_data);
-        let html = original_data.replaceAll(/\n/g, '<br>');
+        const html = original_data.replaceAll(/\n/g, '<br>');
         $(embed_id).html(html).prop('contenteditable', true);
         $(preview_btn_id).prop('disabled', false);
         $(edit_btn_id).prop('disabled', true);
-        console.log("embed_id: " + embed_id + " preview_btn_id: " + preview_btn_id + " edit_btn_id: " + edit_btn_id);
+        $(date_btn_id).visible();
     });
 
     $("p[contenteditable]").doubleClick(function(e) {
@@ -141,6 +154,7 @@ $(function() {
   });
 
     $('.dc-embed-date-btn').on(tempusDominus.Namespace.events.change, function(e) {
-        console.log(formatDate(e.date));
+        const embed_id = "#" + this.id.replace(/-date-btn$/, '');
+        $(embed_id).attr('before-text', formatNewsDateMessage(e.date));
     });
 });
