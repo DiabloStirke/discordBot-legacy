@@ -42,6 +42,11 @@ def tz_now(tz='Europe/Madrid'):
     return datetime.now(tz=tz)
 
 
+def tz_fromiso(iso_date, tz='Europe/Madrid'):
+    tz = ZoneInfo(tz)
+    return datetime.fromisoformat(iso_date).astimezone(tz)
+
+
 def ordinal(n: int):
     if 11 <= (n % 100) <= 13:
         suffix = 'th'

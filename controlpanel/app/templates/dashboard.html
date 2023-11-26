@@ -6,9 +6,11 @@
 
 {% set cards = [
     {'title': 'Users', 'text': 'View and manage users.', 'button': 'Users', 'icon': 'bi-person-circle', 'link': '/users'},
-    {'title': 'Message combo', 'text': 'View and manage message combos.', 'button': 'Combos', 'icon': 'bi-chat-square-text', 'link': '#'},
+    {'title': 'Victim count', 'text': 'Number of times Diablo Strike killed each user.', 'button': 'Victims','svg': 'skull-bomb', 'link': '#'},
     {'title': 'Audio commands', 'text': 'View and manage audio commands.', 'button': 'Audios', 'icon': 'bi-volume-up', 'link': '#'},
-    {'title': 'Silksong news', 'text': 'Add silksong news', 'button': 'Silksong','svg': '/svg/needle', 'link': '/silksong',},
+    {'title': 'Playlists', 'text': 'View and manage playlists for the music bot.', 'button': 'Playlists', 'icon': 'bi-music-note-list', 'link': '#'},
+    {'title': 'Message combo', 'text': 'View and manage message combos.', 'button': 'Combos', 'icon': 'bi-chat-square-text', 'link': '#'},
+    {'title': 'Silksong news', 'text': 'View and manage silksong news.', 'button': 'Silksong','svg': 'needle', 'link': '/silksong'},
 ] %}
 
 {% block content %}
@@ -22,13 +24,13 @@
                     <div class="container">
                         <div class="row d-flex flex-nowrap align-items-center">
                             <div class="col-10 customized-col">
-                                <h5 class="card-title">{{ card.title }}</h5>
+                                <h4 class="card-title">{{ card.title }}</h4>
                                 <p class="card-text">{{ card.text }}</p>
                                 <a href="{{ card.link }}" class="btn btn-primary">Go to {{ card.button }}</a>
                             </div>
                             <div class="col-auto">
                             {% if not card.icon %}
-                                <img src="{{ card.svg }}.svg">
+                                <img src="/svg/{{ card.svg }}.svg">
                             {% else %}
                                 <i class="bi bi-64 {{ card.icon }}"></i>
                             {% endif %}

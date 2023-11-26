@@ -46,6 +46,13 @@ h6 > a:hover {
     text-decoration: underline;
 }
 
+.dc-btn-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
 .dc-embed {
     border-left: 5.5px solid #CF540B ! important;
     border-radius: 5px;

@@ -1,55 +1,3 @@
-function parseAsterisks(text){
-    //"".replace(new RegExp("<br>$"), "").replaceAll("<br>", "\n");
-    //let res = text.replaceAll(/\*\*\*((?:[^*\\]|\\\*)+)\*\*\*/g, "<b><i>$1</i></b>");
-    const asterisk_code = '!::0x2A';
-    let encoded = text.replaceAll(/\\\*/g, asterisk_code);
-    let res = encoded.replaceAll(/\*\*\*((?:(?!\*\*\*).)+)\*\*\*/g, "<b><i>$1</i></b>");
-    res = res.replaceAll(/\*\*((?:(?!\*\*).)+)\*\*/g, "<b>$1</b>");
-    res = res.replaceAll(/\*([^*]+)\*/g, "<i>$1</i>");
-    res = res.replaceAll(asterisk_code, "*");
-    return res;
-}
-
-function parseTildes(text){
-    const tilde_code = '!::0x7E';
-    let encoded = text.replaceAll(/\\~/g, tilde_code);
-    let res = encoded.replaceAll(/~~((?:(?!~~).)+)~~/g, "<del>$1</del>");
-    res = res.replaceAll(tilde_code, "~");
-    return res;
-}
-
-function extractAndEncodeUrls(text){
-    const url_code = '!::0xURL';
-    let url_regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/g
-    let url_arr = text.match(url_regex);
-    url_arr = (url_arr === undefined || url_arr === null) ? [] : url_arr;
-    let encoded = text.replaceAll(url_regex, url_code);
-    return {url_array: url_arr, url_encoded: encoded};
-
-}
-
-function decodeUrls(url_arr, text){
-    const url_code = '!::0xURL';
-    let res = text;
-    for (let i = 0; i < url_arr.length; i++){
-        let anchor = '<a href="' + url_arr[i] + '">' + url_arr[i] + '</a>';
-        res = res.replace(url_code, anchor);
-    }
-    return res;
-}
-
-function compileMarkdown(text){
-    let {url_array, url_encoded} = extractAndEncodeUrls(text); 
-    let res = parseAsterisks(url_encoded);
-    res = parseTildes(res);
-    res = decodeUrls(url_array, res);
-    return res;
-}
-
-function removeTags(text){
-    return text.replaceAll(/<\/?[^<>\/\\]+\/?>/g, '');
-
-}
 
 function formatDate(date){
     let month = date.toLocaleString('en-UK', { month: 'long' });
@@ -73,6 +21,7 @@ function formatNewsDateMessage(date){
 
 $(function() {
 
+    // Paste clipboard data as plain text
     $(document).on('paste', 'p[contenteditable]', function(e) {
         e.preventDefault();
         const clipboardData = e.clipboardData || e.originalEvent.clipboardData || window.clipboardData;
@@ -85,6 +34,7 @@ $(function() {
         console.log(text);
     });
 
+    // Preview button click handler
     $(".dc-embed-preview-btn").click(function(e) {
         const preview_btn_id = "#" + this.id;
         const embed_id = "#" + this.id.replace(/-preview-btn$/, '');
@@ -92,18 +42,20 @@ $(function() {
         const date_btn_id = embed_id + '-date-btn';
 
         let html = $(embed_id).html()
-        let original_data = html.replace(/<br>^/, '').replaceAll(/<br>/g, '\n');
+        let original_data = html.replace(/<br>$/, '').replaceAll(/<br>/g, '\n');
         original_data = removeTags(original_data);
-        $(embed_id).prop('contenteditable', false).attr('data-original', original_data);
-
+        
         html = compileMarkdown(html);
         html = $(embed_id).attr('before-text') + html;
         
+        $(embed_id).prop('contenteditable', false).attr('data-original', original_data);
         $(embed_id).html(html);
         $(edit_btn_id).prop('disabled', false);
         $(preview_btn_id).prop('disabled', true);
         $(date_btn_id).invisible();
     });
+
+    // Edit button click handler
     $(".dc-embed-edit-btn").click(function(e) {
         const edit_btn_id = "#" + this.id;
         const embed_id = "#" + this.id.replace(/-edit-btn$/, '');
@@ -113,18 +65,39 @@ $(function() {
         let original_data = $(embed_id).attr('data-original');
         original_data = removeTags(original_data);
         const html = original_data.replaceAll(/\n/g, '<br>');
+
         $(embed_id).html(html).prop('contenteditable', true);
         $(preview_btn_id).prop('disabled', false);
         $(edit_btn_id).prop('disabled', true);
         $(date_btn_id).visible();
     });
 
+    $(".dc-embed-save-btn").click(function(e) {
+        const embed_id = "#" + this.id.replace(/-save-btn$/, '');
+        const preview_btn_id = embed_id + '-preview-btn';
+        if (!$(preview_btn_id).prop('disabled')) {
+            $(preview_btn_id).click();
+        }
+        const message = $(embed_id).attr('data-original');
+        const date = $(embed_id).attr('data-date') || new Date().toISOString();
+        // Dirty hack to send the data to the server with a POST request and redirect
+        // by creating a form and submitting it
+        const form = $('<form action="/silksong" method="POST">' +
+            '<input type="hidden" name="message" value="' + message + '" />' +
+            '<input type="hidden" name="date" value="' + date  + '" />' +
+            '</form>'
+        );
+        $('body').append(form);
+        form.submit();
+    });
+    // Double click on message handler
     $("p[contenteditable]").doubleClick(function(e) {
         if (this.isContentEditable) return;
         
         $("#" + this.id + "-edit-btn").click();
     });
 
+    // Attach date picker to date button
     $('.dc-embed-date-btn').tempusDominus({
         display: {
             icons: {
@@ -140,7 +113,11 @@ $(function() {
                 close: 'bi bi-x-circle'
             },
             components: {
-                clock: false
+                decades: false,
+                clock: false,
+                hours: false,
+                minutes: false,
+                seconds: false,
             },
             buttons: {
                 today: true,
@@ -151,10 +128,12 @@ $(function() {
         restrictions: {
             maxDate: getLastMomentOfToday()
         }
-  });
+    });
 
+    // Date on date change handler
     $('.dc-embed-date-btn').on(tempusDominus.Namespace.events.change, function(e) {
         const embed_id = "#" + this.id.replace(/-date-btn$/, '');
         $(embed_id).attr('before-text', formatNewsDateMessage(e.date));
+        $(embed_id).attr('data-date', e.date.toISOString());
     });
 });
