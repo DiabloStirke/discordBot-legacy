@@ -16,11 +16,11 @@ credentials = service_account.Credentials.from_service_account_file(
 service = build('drive', 'v3', credentials=credentials)
 
 
-def get_images(file_name):
+def get_images(file_name, exact=False):
     result = service.files().list(
-        q=f"mimeType contains 'image/' and name contains '{file_name}' and '{FOLDER_ID}' in parents",
+        q=f"mimeType contains 'image/' and name {'=' if exact else 'contains'} '{file_name}' and '{FOLDER_ID}' in parents",
         spaces='drive',
-        fields='files(id, name, parents)',
+        fields='files(id, name, mimeType)',
     ).execute()
     return result.get('files', [])
 
@@ -39,4 +39,5 @@ def save_files(files):
             f.write(fh.read())
 
 if __name__ == '__main__':
-    save_files(get_images('test-1'))
+
+    print(get_images('Padoru_'))

@@ -25,6 +25,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: write service_account file
+        run: |
+          echo ${{ secrets.GOOGLE_SERVICE_ACCOUNT }} > bot/service_account.json
+      
       # Runs a set of commands using the runners shell
       - name: Run docker container
         run: |

@@ -5,3 +5,4 @@ __pycache__
 venv
 assets/AnimePic.png
 tmp/
+service_account.json

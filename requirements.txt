@@ -1,6 +1,9 @@
 discord.py
 flask
 flask-sqlalchemy
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
 lxml
 matplotlib
 numpy
@@ -9,5 +12,5 @@ requests
 selenium
 structlog
 tzdata
-yt-dlp==2023.9.24
-youtube-search==2.1.2
+yt-dlp
+youtube-search
