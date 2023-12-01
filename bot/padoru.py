@@ -16,8 +16,8 @@ SCOPES = ['https://www.googleapis.com/auth/drive']
 SERVICE_ACCOUNT_FILE = 'service_account.json'
 FOLDER_ID = '1VeT4QnsFMk-ni5_pTVubKrr6JGos6Irk'
 
-WHEN = datetime.time(20, 15, 0, tzinfo=config.TZINFO)
-WHERE = 1070411336732913714
+WHEN = datetime.time(6, 9, 0, tzinfo=config.TZINFO)
+WHERE = 908128228701536270
 
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE,
