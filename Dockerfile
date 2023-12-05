@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.12
 ENV PYTHONBUFFERED 1
 
 RUN apt-get update
@@ -11,4 +11,5 @@ RUN pip install -r requirements.txt
 
 WORKDIR /discord_bot
 
-CMD python bot.py
+CMD python bot.py --sync
+

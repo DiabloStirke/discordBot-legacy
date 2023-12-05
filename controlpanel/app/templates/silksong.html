@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %} Silksong news {% endblock %}
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.19/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.19/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.19/dist/js/jQuery-provider.js"></script>
+
+    <link rel="stylesheet" href="/css/silksong.css" type="text/css">
+{% endblock %}
+
+{% block headed_body %}
+<div class="body-container">
+    {{ self.header() }}
+    <div class="container py-3 rounded dc-embed-container mb-3 mb-md-5 scrollable-container">
+        <div class="row flex-nowrap mb-5">
+            <div class="col-auto">
+                <img src='{{ user_avatar }}' class="rounded-circle" style="max-width: 50px;"></img>
+            </div>
+            <div class="col">
+                <div class="container">
+                    <div class="row mb-2">
+                        <div class="col-auto ps-0">{{ username }}</div>
+                        <div class="col-auto align-self-center dc-timestamp ps-1">Today at 12:15 PM{#{ news.created_on|date:"d/m/Y" }#}</div>
+                    </div>
+                    <div class="row">
+                        <div class="card border-0 dc-embed">
+                            <div class="row flex-nowrap">
+                                <div class="col ps-2">
+                                    <div class="card-body px-0 h-100 d-flex flex-column">
+                                        <h6 class="ps-1">
+                                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Daily Silksong News</a>
+                                            <div id="dc-embed-new-date-btn" class="dc-btn dc-btn-primary dc-text-btn ms-3 dc-embed-date-btn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Change the date of the news">
+                                                <i class="bi bi-calendar-date"></i>
+                                            </div>
+                                        </h6>
+                                        <p id="dc-embed-new" class="dc-news-body card-text flex-grow-1 text-break rounded-1 ps-1" before-text="Today is {{ date }}. There are silksong news today! " contenteditable="true" data-original=""><br></p>
+                                    </div>
+                                </div>
+                                <div class="col-auto p-3 ps-0 ms-auto">
+                                    <img class='dc-embed-thumbnail rounded' src="https://sm.ign.com/t/ign_nordic/cover/h/hollow-kni/hollow-knight-silksong_46ud.128.jpg"></img>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dc-btn-container mt-3">
+                        <button id="dc-embed-new-preview-btn" class="dc-btn dc-btn-primary dc-embed-preview-btn">Preview</button>
+                        <button id="dc-embed-new-edit-btn" class="dc-btn dc-btn-primary dc-embed-edit-btn" disabled>Edit</button>
+                        <button id="dc-embed-new-save-btn" class="dc-btn dc-btn-success dc-embed-save-btn">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row flex-nowrap">
+            <div class="col-auto">
+                <img src='{{ user_avatar }}' class="rounded-circle" style="max-width: 50px;"></img>
+            </div>
+            <div class="col">
+                <div class="container">
+                    <div class="row mb-2">
+                        <div class="col-auto ps-0">{{ username }}</div>
+                        <div class="col-auto align-self-center dc-timestamp ps-1">09/23/2023 9:37 AM{#{ news.created_on|date:"d/m/Y" }#}</div>
+                    </div>
+                    <div class="row">
+                        <div class="card border-0 dc-embed">
+                            <div class="row flex-nowrap">
+                                <div class="col ps-2">
+                                    <div class="card-body px-0 h-100 d-flex flex-column">
+                                        <h6 class="ps-1"><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Daily Silksong News</a></h6>
+                                        <p class="dc-news-body card-text flex-grow-1 text-break rounded-1 ps-1" before-text="Today is September 23rd 2023. There are silksong news today! " contenteditable="false">
+                                            Well... kinda...
+                                            The silksong steam page was updated they added a new game logo required for seasonal steam events and updated the background image of the page.
+                                            <br><br>
+                                            More info: https://youtu.be/MXwgo-JHYPQ?si=hsVv5Y7RXVmX8RlH
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-auto p-3 ps-0 ms-auto">
+                                    <img class='dc-embed-thumbnail rounded' src="https://sm.ign.com/t/ign_nordic/cover/h/hollow-kni/hollow-knight-silksong_46ud.128.jpg"></img>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="/js/silksong.js"></script>
+{% endblock %}
+```

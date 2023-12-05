@@ -7,14 +7,18 @@ TZ = "Europe/Madrid"
 TZINFO = ZoneInfo(TZ)
 
 
-DISCORD_BOT_TOKEN = os.environ.get('DISCORD_BOT_TOKEN', 'OTIzNzE4Mjg5NzQ4Nzg3MjEz.YcUFsg.vpdcbzez_hXfycU5QEVy3-WFVkc')
+DISCORD_BOT_TOKEN = os.environ.get(
+    'DISCORD_BOT_TOKEN',
+    'OTIzNzE4Mjg5NzQ4Nzg3MjEz.YcUFsg.vpdcbzez_hXfycU5QEVy3-WFVkc'
+)
 
 # Default channel name for ?shift command
 DEATH_CHANNEL = os.environ.get('DEATH_CHANNEL', 'Víctima del DIABLO STRIKE')
 
 # Commit message on start up config
-DEV_CHANNEL_ID = 923745656227655781  # 1070411336732913714 
+DEV_CHANNEL_ID = 923745656227655781  # 1070411336732913714
 LAST_COMMIT_MSG = os.environ.get('COMMIT_MESSAGE', None)
+LAST_COMMIT_BRANCH = os.environ.get('COMMIT_BRANCH', None)
 
 # My Anime List anime info
 MAL_MAX_ANIMES = 19342

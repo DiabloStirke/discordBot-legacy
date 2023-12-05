@@ -1,0 +1,18 @@
+.login-container {
+    transform: translate(-50%, -100%);
+}
+
+@media (max-height: 1000px) {
+    .login-container {
+        transform: translate(-50%, -50%);
+    }
+}
+
+
+@media (max-height: 450px) {
+    .login-container {
+        transform: translate(-60%, -65%);
+        scale: 0.8;
+        margin-bottom: 30rem;
+    }
+}

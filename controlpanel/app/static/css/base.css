@@ -1,0 +1,23 @@
+nav img {
+    max-width: 50px;
+}
+
+.bi.bi-64,
+.icm.icm-64 {
+    font-size: 64px;
+}
+
+.icm::before, [class^="icm-"]::before, [class*=" icm-"]::before {
+    display: inline-block;
+    font-family: 'icomoon' !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    vertical-align: -.125em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+.icm-needle::before { content: "\e900"; }

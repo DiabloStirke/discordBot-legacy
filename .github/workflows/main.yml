@@ -6,7 +6,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
-    branches: [ "master" ]
+  #  branches: [ "master" ]
 #  pull_request:
  #   branches: [ "master" ]
 
@@ -25,10 +25,17 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: write service_account file
+        env:
+          GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$GOOGLE_SERVICE_ACCOUNT" > bot/service_account.json
+      
       # Runs a set of commands using the runners shell
       - name: Run docker container
         run: |
           echo "COMMIT_MESSAGE=${{ github.event.head_commit.message }}" >> .env
+          echo "COMMIT_BRANCH=${{ github.ref_name }}" >> .env
           docker compose up -d --build --force-recreate
         
       - name: Cleanup docker  container

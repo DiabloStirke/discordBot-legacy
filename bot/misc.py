@@ -7,7 +7,7 @@ import asyncio
 import datetime
 import random
 from structlog import get_logger
-from special_rules import check_choose_cheat
+from special_rules import check_choose_cheat # noqa F401
 
 logger = get_logger(__name__)
 
@@ -112,9 +112,9 @@ async def choose(ctx, *args):
             return
 
     str_list = arg_str.split(',') if ',' in arg_str else args
-    
+
     str_list = list(filter(lambda x: bool(x.strip()), str_list))
-    
+
     if len(str_list) == 0:
         await ctx.channel.send("I mean... given this wide list of options, I guess I'll choose nothing.")
 
@@ -137,18 +137,17 @@ async def clean(ctx, limit=1):
 
 @client.command()
 async def silksong(ctx):
-    last_news = datetime.datetime(year=2023, month=5, day=10, tzinfo=config.TZINFO)
+    last_news = datetime.datetime(year=2023, month=9, day=23, tzinfo=config.TZINFO)
     today = datetime.datetime.now(tz=config.TZINFO)
     days = (today - last_news).days
 
 
     description = f"There has been no news to report for silksong for today.\n\nThere were no news for the past {days} days."
     if today.date() == last_news.date():
-        description = "There are silksong news today! \n Matthew Griffin, marketing manager at Team Cherry, published a tweet " + \
-                      "saying that Silksong release will be delayed once more. Here is the tweet: " + \
-                      "https://twitter.com/griffinmatta/status/1656106351184199680?cxt=HHwWgIDSyfb81fstAAAA"
+        description = "There are silksong news today! Well... kinda... \nThe silksong steam page was updated " + \
+                      "they added a new game logo required for seasonal steam events and updated the background " + \
+                      "image of the page.\n\n More info: https://youtu.be/MXwgo-JHYPQ?si=hsVv5Y7RXVmX8RlH"
 
-    
 
     embed = discord.Embed(
         title="Daily Silksong News",
@@ -162,6 +161,7 @@ async def silksong(ctx):
     )
     await ctx.channel.send(embed=embed)
 
+
 @client.event
 async def on_message(message):
     # if message.author.id == 370953016951439361: #joey
@@ -171,21 +171,21 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    global important_stuff
+    # global important_stuff
 
-    if isinstance(message.channel, discord.DMChannel) and message.author.id == 369546906449346560:
-        logger.info(f'({message.author.id}) {message.author}: {message.content}')
-        # if message.author.id == 370953016951439361: #joey
-        #     await message.channel.send('No lo repetiré, está feo que robes waifus')
-        #     return
-        if '_change_channel' in message.content.lower():
-            channel_name = message.content.lower().split(' ')[1]
-            important_stuff['current'] = important_stuff[f'tl_{channel_name}']
-            await message.channel.send('OK')
-            return
-        ch = important_stuff['current']
-        await ch.send(message.content)
-        return
+    # if isinstance(message.channel, discord.DMChannel) and message.author.id == 369546906449346560:
+    #     logger.info(f'({message.author.id}) {message.author}: {message.content}')
+    #     # if message.author.id == 370953016951439361: #joey
+    #     #     await message.channel.send('No lo repetiré, está feo que robes waifus')
+    #     #     return
+    #     if '_change_channel' in message.content.lower():
+    #         channel_name = message.content.lower().split(' ')[1]
+    #         important_stuff['current'] = important_stuff[f'tl_{channel_name}']
+    #         await message.channel.send('OK')
+    #         return
+    #     ch = important_stuff['current']
+    #     await ch.send(message.content)
+    #     return
 
     combos_str = ['zura', 'lolicon']
     combos = {combo: {'combo': list(combo)} for combo in combos_str}
