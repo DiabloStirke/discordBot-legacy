@@ -1,16 +1,2 @@
-discord.py
-flask
-flask-sqlalchemy
-google-api-python-client
-google-auth-oauthlib
-google-auth-httplib2
-lxml
-matplotlib
-numpy
-PyNaCl
-requests
-selenium
-structlog
-tzdata
-yt-dlp
-youtube-search
+-r bot/requirements.txt
+-r controlpanel/requirements.txt

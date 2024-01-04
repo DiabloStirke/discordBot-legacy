@@ -1,0 +1,13 @@
+discord.py
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
+lxml
+matplotlib
+numpy
+PyNaCl
+requests
+structlog
+tzdata
+yt-dlp
+youtube-search

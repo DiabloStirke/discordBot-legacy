@@ -1,12 +1,51 @@
-version: '3.7'
-
+# This compose file is intended for local development only.
 services:
-  discord_bot:
-    build: .
-    restart: unless-stopped
-    container_name: discord_bot
+  postgres_bot:
+    extends:
+      file: controlpanel/docker-compose.yml
+      service: postgres_bot
     env_file:
       - .env
     volumes:
-      - ./bot/data:/discord_bot/data
-      - ./bot/assets/:/discord_bot/assets/
+      - ./controlpanel/data/postgres/:/var/lib/postgresql/data
+  
+  # Depeneds on breaks the build
+  # bot_control_panel:
+  #   extends:
+  #     file: controlpanel/docker-compose.yml
+  #     service: bot_control_panel
+
+  #   networks:
+  #     - ds_net
+
+  # So here is the workaround
+
+  bot_control_panel:
+    image: discord_bot_control_panel
+    build:
+      context: ./controlpanel
+      dockerfile: Dockerfile
+    container_name: bot_control_panel
+    env_file:
+      - .env
+    volumes:
+      - ./controlpanel/migrations:/controlpanel/migrations
+      - ./controlpanel/web:/controlpanel/web # Development only
+    ports:
+      - 8000:8000
+    networks:
+      - ds_net
+    depends_on:
+      - postgres_bot
+
+  discord_bot:
+    extends:
+      file: bot/docker-compose.yml
+      service: discord_bot
+    command: "python bot.py"
+    volumes:
+      - ./bot/src:/discord_bot/src
+
+networks:
+  ds_net:
+    driver: bridge

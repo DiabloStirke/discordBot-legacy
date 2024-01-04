@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  discord_bot:
+    build: .
+    restart: unless-stopped
+    container_name: discord_bot
+    environment:
+      - TZ=${TZ}
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+      - BOT_PREFIX=${BOT_PREFIX}
+      - DEV_CHANNEL_ID=${DEV_CHANNEL_ID}
+      - CONTROL_PANEL_URL=${CONTROL_PANEL_URL}
+      - CONTROL_PANEL_TOKEN=${CONTROL_PANEL_TOKEN}
+    volumes:
+      - ./data:/discord_bot/data
+      - ./assets/:/discord_bot/assets/
+    networks:
+      - ds_net
+
+networks:
+  ds_net:
+    external: true
