@@ -5,6 +5,7 @@ from web.utils import ensure_session, ensure_role, get_main_context
 
 users = Blueprint('users', __name__)
 
+
 @users.route('/users/', methods=['GET'], endpoint='get_users')
 @ensure_session
 @ensure_role(RoleEnum.ADMIN)
@@ -47,7 +48,7 @@ def new_user():
     user = User.new(disc_id, username, role, use_discord_username)
 
     flash(f'User {disc_id}'
-          + f'{" (" + user.username + ")"  if user.username else ""} created successfully')
+          + f'{" (" + user.username + ")" if user.username else ""} created successfully')
     return redirect(url_for('users.get_users'))
 
 
@@ -63,7 +64,7 @@ def delete_user(disc_id):
     user.delete()
 
     flash(f'User {disc_id}'
-          + f'{" (" + user.username + ")"  if user.username else ""} deleted successfully')
+          + f'{" (" + user.username + ")" if user.username else ""} deleted successfully')
     return redirect(url_for('users.get_users'))
 
 
@@ -88,5 +89,5 @@ def edit_user(disc_id):
     user.update(username, role, use_discord_username)
 
     flash(f'User {disc_id}'
-          + f'{" (" + user.username + ")"  if user.username else ""} edited successfully')
+          + f'{" (" + user.username + ")" if user.username else ""} edited successfully')
     return redirect(url_for('users.get_users'))

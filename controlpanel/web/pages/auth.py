@@ -17,6 +17,7 @@ dc = DiscordClient(
 
 auth = Blueprint('auth', __name__)
 
+
 def set_session(auth_data):
     session['token'] = auth_data['access_token']
     session['expires'] = tz_now() + datetime.timedelta(seconds=auth_data['expires_in'])
@@ -77,10 +78,17 @@ def discord_oauth2():
 @auth.route('/discord-authorized', methods=['GET'])
 def authorized():
     code = request.args.get('code')
-    auth_data = dc.exchange_code(code, CALLBACK_URL.format(base=request.url_root))
+    try:
+        auth_data = dc.exchange_code(code, CALLBACK_URL.format(base=request.url_root))
+    except DiscordClientException:
+        return redirect('/login')
     set_session(auth_data)
     user = User.get_by_id(session['user']['id'])
-    if user and user.use_discord_username and (
-            user.username != session['user']['username'] or not user.username_matches_discord):
-        user.update(username=session['user']['username'], username_matches_discord=True)
+    if user:
+        if user.use_discord_username and (
+          user.username != session['user']['username'] or not user.username_matches_discord):
+            user.update(username=session['user']['username'], username_matches_discord=True)
+        if user.avatar_url != session['user']['avatar_url']:
+            user.update(avatar_url=session['user']['avatar_url'])
+
     return redirect('/')

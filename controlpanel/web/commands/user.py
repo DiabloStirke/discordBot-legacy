@@ -2,6 +2,7 @@ import click
 from flask import Blueprint
 from flask.cli import with_appcontext
 from web.models.user import User, RoleEnum
+from web.models.authtoken import AuthToken
 
 import web.config as config
 
@@ -26,3 +27,15 @@ def create_admin(discord_id):
     user = User.new(discord_id, None, RoleEnum.ADMIN, True)
 
     click.echo(f'User {discord_id} created successfully')
+
+
+@user_commands.cli.command('create-token')
+@click.argument('name', type=str, required=False)
+@with_appcontext
+def create_token(name):
+    """Create a new auth token.
+
+    NAME: The name of the token (for easier identification). Optional.
+    """
+    token = AuthToken.generate(name)
+    click.echo(token)
