@@ -21,30 +21,44 @@ services:
   # So here is the workaround
 
   bot_control_panel:
-    image: discord_bot_control_panel
-    build:
-      context: ./controlpanel
-      dockerfile: Dockerfile
-    container_name: bot_control_panel
+    extends:
+      file: controlpanel/docker-compose.yml
+      service: bot_control_panel
     env_file:
       - .env
     volumes:
       - ./controlpanel/migrations:/controlpanel/migrations
-      - ./controlpanel/web:/controlpanel/web # Development only
-    ports:
-      - 8000:8000
-    networks:
-      - ds_net
-    depends_on:
-      - postgres_bot
+    command: "--development"
+    develop:
+      watch:
+        - action: sync
+          path: ./controlpanel/web/
+          target: /controlpanel/web/
+          ignore: 
+            - "**/__pycache__/"   
+
+        - action: rebuild
+          path: ./controlpanel/Dockerfile
+
+        - action: sync+restart 
+          path: ./controlpanel/scripts/entrypoint.sh
+          target: /controlpanel/entrypoint.sh
+
+        - action: rebuild
+          path: ./controlpanel/requirements.txt
 
   discord_bot:
     extends:
       file: bot/docker-compose.yml
       service: discord_bot
     command: "python bot.py"
-    volumes:
-      - ./bot/src:/discord_bot/src
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./bot/src/
+          target: /discord_bot/src/
+          ignore: 
+            - __pycache__/
 
 networks:
   ds_net:

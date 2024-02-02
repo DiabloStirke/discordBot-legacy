@@ -2,6 +2,23 @@
 
 set -e
 
+DEVELOPMENT=false
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+        -d|--devel|--development)
+            DEVELOPMENT=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $key"
+            exit 1
+            ;;
+    esac
+done
+
 # wait for Postgres to start
 function postgres_ready(){
 python << EOF
@@ -22,10 +39,16 @@ until postgres_ready; do
   sleep 1
 done
 
-echo "Running migrations"
-flask db upgrade
-echo "creating admin user"
-flask users create-admin
+# echo "Running migrations"
+# flask db upgrade
+# echo "creating admin user"
+# flask users create-admin
+
+if [ "$DEVELOPMENT" = true ]; then
+    echo "Starting development server"
+    exit $(flask --app web run --host=0.0.0.0 --port 8000 --debug)
+    
+fi
 
 echo "Starting gunicorn server"
 gunicorn -w 2 'web:create_app()' -b 0.0.0.0:8000 --reload

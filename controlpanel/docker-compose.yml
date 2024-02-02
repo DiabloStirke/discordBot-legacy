@@ -16,11 +16,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - FLASK_APP=${FLASK_APP:-web}
-    volumes:
-      - ./migrations:/controlpanel/migrations
     depends_on:
       - postgres_bot
-      - nginx
     ports:
       - 8000:8000
     networks:
@@ -52,6 +49,8 @@ services:
       - 443:443
     networks:
       - ds_net
+    depends_on:
+      - bot_control_panel
 
 networks:
   ds_net:
