@@ -18,7 +18,7 @@ class SilksongNews(Base):
         ForeignKey('users.id', ondelete='CASCADE'),
         nullable=False
     )
-    author: Mapped['User'] = relationship(back_populates='silksong_news')
+    author: Mapped['User'] = relationship(back_populates='silksong_news')  # noqa F821 # type: ignore
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=func.now())
 

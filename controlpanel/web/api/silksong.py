@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify
 from web.api.utils import token_auth
 from web.models.silksong import SilksongNews
 

@@ -8,13 +8,15 @@ import web.config as config
 
 user_commands = Blueprint('user_commands', __name__, cli_group='users')
 
+
 @user_commands.cli.command('create-admin')
 @click.argument('discord_id', type=int, required=False)
 @with_appcontext
 def create_admin(discord_id):
     """Create a new admin user.
 
-    DISCORD_ID: The discord ID of the user to create. Optional if environment variable CONTROL_PANEL_ADMIN_ID is set.
+    DISCORD_ID: The discord ID of the user to create.
+    Optional if environment variable CONTROL_PANEL_ADMIN_ID is set.
     """
     if not discord_id:
         discord_id = int(config.CONTROL_PANEL_ADMIN_ID)

@@ -2,6 +2,7 @@ from functools import wraps
 from flask import request, jsonify
 from web.models.authtoken import AuthToken
 
+
 def token_auth(func):
     """A decorator for routes that require an auth token."""
     @wraps(func)

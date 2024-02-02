@@ -6,6 +6,7 @@ from web.utils import ensure_session, ensure_role, get_main_context, tz_now, tz_
 
 silksong = Blueprint('silksong', __name__)
 
+
 @silksong.route('/silksong/', methods=['GET'], endpoint='silksong_get')
 @ensure_session
 @ensure_role(RoleEnum.ADMIN)
@@ -62,7 +63,12 @@ def silksong_post():
 
     return redirect(url_for('silksong.silksong_get'))
 
-@silksong.route('/silksong/<int:silksong_news_id>/delete', methods=['POST'], endpoint='silksong_delete')
+
+@silksong.route(
+    '/silksong/<int:silksong_news_id>/delete',
+    methods=['POST'],
+    endpoint='silksong_delete'
+)
 @ensure_session
 @ensure_role(RoleEnum.ADMIN)
 def silksong_delete(silksong_news_id):

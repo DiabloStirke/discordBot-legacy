@@ -2,7 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import select
-from sqlalchemy.sql.selectable import Select
 from typing import Self, List
 
 
