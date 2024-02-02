@@ -6,6 +6,10 @@
     box-shadow: 0px 4px 8px rgba(0,0,0,.3);
 }
 
+.tooltip-inner{
+    white-space:pre-wrap;
+}
+
 html, body, .body-container {
     height: 100%;
 }
@@ -19,7 +23,6 @@ html, body, .body-container {
     flex: 1;
     overflow-y: scroll;
 }
-
 
 .dc-timestamp {
     font-weight: normal;
@@ -55,7 +58,7 @@ h6 > a:hover {
 
 .dc-embed {
     border-left: 5.5px solid #CF540B ! important;
-    border-radius: 5px;
+    border-radius: 5px 0px 0px 5px;
     background-color:#2B2D31;
     font-family: inherit;
     font-weight: normal;
@@ -64,6 +67,7 @@ h6 > a:hover {
     box-shadow: 0px 4px 8px rgba(0,0,0,.3);
     max-width: 750px;
     min-width: 250px;
+    z-index: 1;
 }
 
 .dc-news-body[contenteditable="true"]::before {
@@ -84,6 +88,31 @@ h6 > a:hover {
   border-color: #86b7fe;;
   box-shadow: 0 0 0 .25rem rgba(13,110,253,.25);
  
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    10%, 90% { transform: translateX(-3px); }
+    20%, 80% { transform: translateX(3px); }
+    30%, 50%, 70% { transform: translateX(-3px); }
+    40%, 60% { transform: translateX(3px); }
+    100% { transform: translateX(0); }
+}
+
+.content-editable-error {
+    outline-color: #995b5d;
+    animation: shake 0.7s;
+}
+
+.content-editable-error:focus {
+    box-shadow: 0 0 0 .25rem rgba(253, 13, 13, 0.15) !important;
+}
+
+.content-editable-error-label {
+    color: #f77a7e;
+    font-size: 12px;
+    font-weight: normal;
+    margin-left: 5px;
 }
 
 .dc-embed-thumbnail {
@@ -152,17 +181,73 @@ button.dc-btn:enabled:hover,
     --dc-hover-color: #d53b3e;
 }
 
+.dc-btn-warning {
+    --dc-btn-color: #faa61a;
+    --dc-hover-color: #e59917;
+}
+
+
+.dc-right-slider-80 {
+    transform: translateX(-80%);
+    transition: transform 0.2s ease-in-out;
+}
+
+.dc-right-slider-80:hover {
+    transform: translateX(0%);
+    transition: transform 0.2s ease-in-out;
+}
+
+.dc-embed-drawer{
+    background-color: #2B2D31;
+    border-radius: 0px 5px 5px 0px;
+}
+
+
+.dc-embed-drawer-body {
+    width: 80%;
+}
+
+.dc-embed-drawer-handle{
+    width: 20%;
+    background-color: #5865F2;
+    border-radius: 0px 5px 5px 0px;
+}
+
 @media (max-width: 768px) {
     .dc-embed-thumbnail {
         width: 80px;
         height: 80px;
     }
+
+    .scrollable-container {
+        overflow-y: unset;
+        border-radius: 0px;
+    }
+
+    .radius-sm-0 {
+        border-radius: 0 !important;
+    }
     
+}
+
+@media (max-height: 520px) {
+    .scrollable-container {
+        overflow-y: unset;
+        border-radius: 0px;
+    }
+
+    .radius-sm-0 {
+        border-radius: 0 !important;
+    }
 }
 
 @media (max-width: 490px) {
     .dc-embed-thumbnail {
         width: 60px;
         height: 60px;
+    }
+    .dc-avatar {
+        width: 40px;
+        height: 40px;
     }
 } 
