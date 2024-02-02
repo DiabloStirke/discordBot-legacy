@@ -26,7 +26,7 @@
                             <div class="col-10 customized-col">
                                 <h4 class="card-title">{{ card.title }}</h4>
                                 <p class="card-text">{{ card.text }}</p>
-                                <a href="{{ card.link }}" class="btn btn-primary {% if card.f == '#' %} disabled {% endif %}">Go to {{ card.button }}</a>
+                                <a href="{{ card.link }}" class="btn btn-primary{% if card.link == '#' %} disabled{% endif %}">Go to {{ card.button }}</a>
                             </div>
                             <div class="col-auto">
                             {% if not card.icon %}
