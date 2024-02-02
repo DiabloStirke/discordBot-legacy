@@ -1,8 +1,8 @@
-"""first migration
+"""init
 
-Revision ID: 44934ee10952
+Revision ID: b5159f13e38b
 Revises: 
-Create Date: 2024-01-04 22:18:02.612667
+Create Date: 2024-01-20 13:40:05.032038
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '44934ee10952'
+revision = 'b5159f13e38b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,17 +21,19 @@ def upgrade():
     op.create_table('users',
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('username', sa.String(), nullable=True),
-    sa.Column('role', sa.Enum('ADMIN', 'STAFF', 'USER', name='roleenum'), nullable=True),
-    sa.Column('use_discord_username', sa.Boolean(), nullable=True),
-    sa.Column('username_matches_discord', sa.Boolean(), nullable=True),
+    sa.Column('role', sa.Enum('ADMIN', 'STAFF', 'USER', name='roleenum'), nullable=False),
+    sa.Column('use_discord_username', sa.Boolean(), nullable=False),
+    sa.Column('username_matches_discord', sa.Boolean(), nullable=False),
+    sa.Column('avatar_url', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('silksong_news',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('message', sa.String(), nullable=True),
-    sa.Column('date', sa.DateTime(), nullable=True),
-    sa.Column('author_id', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['author_id'], ['users.id'], ),
+    sa.Column('message', sa.String(length=1750), nullable=False),
+    sa.Column('date', sa.DateTime(), nullable=False),
+    sa.Column('author_id', sa.BigInteger(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['author_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

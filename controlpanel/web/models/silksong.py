@@ -1,24 +1,37 @@
-from web.db import db
-from typing import override
+import datetime
+from typing import Any
 
-class SilkSongNews(db.Model):
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, ForeignKey, func
+from web.db import Base
+from web.utils import ordinal
+# from typing import override
+
+
+class SilksongNews(Base):
     __tablename__ = 'silksong_news'
 
-    id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.String)
-    date = db.Column(db.DateTime)
-    author_id = db.Column(db.ForeignKey('users.id'))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    message: Mapped[str] = mapped_column(String(1750), nullable=False)
+    date: Mapped[datetime.datetime] = mapped_column(nullable=False)
+    author_id: Mapped[int] = mapped_column(
+        ForeignKey('users.id', ondelete='CASCADE'),
+        nullable=False
+    )
+    author: Mapped['User'] = relationship(back_populates='silksong_news')
 
-    author = db.relationship('User', backref='silksong_news')
+    created_at: Mapped[datetime.datetime] = mapped_column(default=func.now())
 
     def __repr__(self):
-        return f'<SilkSongNews(title={self.title}, date={self.date})>'
+        return f'<SilkSongNews(By {self.author.username} on {self.date})>'
 
-    @override
-    def update(self, title=None, url=None, date=None):
-        return super().update(ignore_null=True, title=title, url=url, date=date)
+    def toJSON(self) -> dict[str, Any]:
+        return {
+            'id': self.id,
+            'message': self.message,
+            'date': self.date.isoformat(),
+        }
 
-    @override
-    @classmethod
-    def new(cls, title, url, date):
-        return super().new(title=title, url=url, date=date)
+    @property
+    def verbose_date(self):
+        return f'{self.date.strftime("%B")} {ordinal(self.date.day)} {self.date.year}'

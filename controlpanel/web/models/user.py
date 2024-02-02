@@ -1,6 +1,8 @@
 from enum import Enum
-from typing import override
-from web.db import db
+from typing import override, List
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import BigInteger
+from web.db import db, Base
 
 class RoleEnum(Enum):
     ADMIN = 'Admin'
@@ -48,14 +50,22 @@ class RoleEnum(Enum):
         return super().__hash__()
 
 
-class User(db.Model):
+class User(Base):
     __tablename__ = 'users'
 
-    id = db.Column(db.BigInteger, primary_key=True)
-    username = db.Column(db.String)
-    role = db.Column(db.Enum(RoleEnum))
-    use_discord_username = db.Column(db.Boolean, default=True)
-    username_matches_discord = db.Column(db.Boolean, default=False)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    username: Mapped[str] = mapped_column(nullable=True)
+    role: Mapped[RoleEnum]
+    use_discord_username: Mapped[bool] = mapped_column(default=True)
+    username_matches_discord: Mapped[bool] = mapped_column(default=False)
+    avatar_url: Mapped[str] = mapped_column(nullable=True)
+
+    silksong_news: Mapped[List['SilksongNews']] = relationship(
+        back_populates='author',
+        cascade='all, delete-orphan',
+        passive_deletes=True
+    )
+
 
     def __repr__(self):
         return f'<User(name={self.username}, role={self.role.value})>'
@@ -72,7 +82,8 @@ class User(db.Model):
             username=None,
             role=None,
             use_discord_username=None,
-            username_matches_discord=None
+            username_matches_discord=None,
+            **kwargs
     ):
         if username is not None:
             if self.username != username and self.username_matches_discord:
@@ -88,12 +99,14 @@ class User(db.Model):
         if username_matches_discord is not None:
             self.username_matches_discord = username_matches_discord
 
-        super().update()
+        return super().update(ignore_null=True, **kwargs)
 
     @override
     @classmethod
     def new(cls, disc_id, username=None, role=RoleEnum.USER, use_discord_username=True):
-       return super().new(id=disc_id, username=username, role=role, use_discord_username=use_discord_username)
+        return super().new(
+           id=disc_id, username=username, role=role, use_discord_username=use_discord_username
+        )
 
     @staticmethod
     def validate_role(role):
