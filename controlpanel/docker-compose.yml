@@ -42,6 +42,7 @@ services:
       - ./nginx/:/etc/nginx/conf.d/:ro
       - /var/www/certbot/:/var/www/certbot/:ro
       - /etc/letsencrypt/live/diablostrike.com/:/etc/letsencrypt/live/diablostrike.com/:ro
+      - /etc/letsencrypt/archive/diablostrike.com/:/etc/letsencrypt/archive/diablostrike.com/:ro
     ports:
       - 80:80
       - 443:443
