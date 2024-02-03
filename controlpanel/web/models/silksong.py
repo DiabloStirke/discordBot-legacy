@@ -12,7 +12,7 @@ class SilksongNews(Base):
     __tablename__ = 'silksong_news'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    message: Mapped[str] = mapped_column(String(1750), nullable=False)
+    message: Mapped[str] = mapped_column(String(1800), nullable=False)
     date: Mapped[datetime.datetime] = mapped_column(nullable=False)
     author_id: Mapped[int] = mapped_column(
         ForeignKey('users.id', ondelete='CASCADE'),

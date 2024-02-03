@@ -73,7 +73,9 @@
                             {% set alert_class, icon_class = 'success', 'bi-check-circle-fill' %}
                         {% endif %}
             
-                    <div class="alert alert-{{ alert_class }} ms-5 me-5 mt-2" role="alert">
+                    <div class="alert alert-{{ alert_class }} ms-5 me-5 mt-2 ps-4" role="alert">
+                        <button type="button" class="btn-close alert-dismiss-btn" data-bs-dismiss="alert" aria-label="Close">
+                        </button>
                         <i class="bi {{ icon_class }}"></i>
                         {{ message }}
                     </div>
