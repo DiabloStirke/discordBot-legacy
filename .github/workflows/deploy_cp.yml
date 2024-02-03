@@ -16,7 +16,7 @@ jobs:
             
       - name: Run docker container
         env:
-          TZ: $${{ vars.TIMEZONE }}
+          TZ: ${{ vars.TIMEZONE }}
           FLASK_SECRET_KEY: ${{ secrets.FLASK_SECRET_KEY }}
           CONTROL_PANEL_ADMIN_ID: ${{ secrets.CONTROL_PANEL_ADMIN_ID }}
           DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
