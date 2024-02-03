@@ -39,8 +39,8 @@ services:
     restart: unless-stopped
     container_name: nginx
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d:ro
-      - /var/www/certbot:/var/www/certbot:ro
+      - ./nginx/:/etc/nginx/conf.d/:ro
+      - /var/www/certbot/:/var/www/certbot/:ro
     ports:
       - 80:80
       - 443:443
