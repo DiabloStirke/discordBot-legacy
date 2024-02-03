@@ -39,10 +39,10 @@ until postgres_ready; do
   sleep 1
 done
 
-# echo "Running migrations"
-# flask db upgrade
-# echo "creating admin user"
-# flask users create-admin
+echo "Running migrations"
+flask db upgrade
+echo "creating admin user"
+flask users create-admin
 
 if [ "$DEVELOPMENT" = true ]; then
     echo "Starting development server"
