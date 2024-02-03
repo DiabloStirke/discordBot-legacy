@@ -9,7 +9,9 @@ import punishment # noqa F401
 from music import music
 import misc  # noqa F401
 import amplitugraphy # noqa F401
-import padoru
+import padoru # noqa F401
+from silksong import silksong # noqa F401
+
 
 def main():
     parser = argparse.ArgumentParser('bot', description='Main program that runs the discrod bot')
@@ -24,7 +26,7 @@ def main():
     client.sync = args.sync
     client.cog_classes = [music.Music]
     client.tasks = [padoru.send_padoru]
-    # client.groups = [test_hybrid.slash_group]
+    client.groups = [silksong.silksong]
     client.run(config.DISCORD_BOT_TOKEN)
 
 

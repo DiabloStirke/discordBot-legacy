@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+from datetime import datetime
 import requests
 from lxml import etree
 from io import StringIO
@@ -7,6 +9,7 @@ from urllib.parse import urlparse, parse_qs
 from typing import Tuple, Callable, Coroutine
 import functools
 import asyncio
+from config import TZ
 
 
 def get_webpage(url):
@@ -79,3 +82,13 @@ def to_thread(func: Callable) -> Coroutine:
     async def wrapper(*args, **kwargs):
         return await asyncio.to_thread(func, *args, **kwargs)
     return wrapper
+
+
+def tz_now(tz=TZ):
+    tz = ZoneInfo(tz)
+    return datetime.now(tz=tz)
+
+
+def tz_fromiso(iso_date, tz=TZ):
+    tz = ZoneInfo(tz)
+    return datetime.fromisoformat(iso_date).astimezone(tz)

@@ -1,10 +1,9 @@
 import discord
 
 from bot_config import client
-from utils import find_vc, ordinal
+from utils import find_vc
 import config
 import asyncio
-import datetime
 import random
 from structlog import get_logger
 from special_rules import check_choose_cheat # noqa F401
@@ -137,29 +136,8 @@ async def clean(ctx, limit=1):
 
 @client.command()
 async def silksong(ctx):
-    last_news = datetime.datetime(year=2023, month=9, day=23, tzinfo=config.TZINFO)
-    today = datetime.datetime.now(tz=config.TZINFO)
-    days = (today - last_news).days
-
-
-    description = f"There has been no news to report for silksong for today.\n\nThere were no news for the past {days} days."
-    if today.date() == last_news.date():
-        description = "There are silksong news today! Well... kinda... \nThe silksong steam page was updated " + \
-                      "they added a new game logo required for seasonal steam events and updated the background " + \
-                      "image of the page.\n\n More info: https://youtu.be/MXwgo-JHYPQ?si=hsVv5Y7RXVmX8RlH"
-
-
-    embed = discord.Embed(
-        title="Daily Silksong News",
-        url="https://www.youtube.com/@DailySilksongNews",
-        color=13587467,
-        description=f"Today is {today.strftime('%B')} {ordinal(today.day)} {today.year}. "
-                    +description,
-    )
-    embed.set_thumbnail(
-        url="https://sm.ign.com/t/ign_nordic/cover/h/hollow-kni/hollow-knight-silksong_46ud.128.jpg"
-    )
-    await ctx.channel.send(embed=embed)
+    await ctx.channel.send("Silksong news command migrated to slash commands." +
+                           " Use /silksong instead.")
 
 
 @client.event

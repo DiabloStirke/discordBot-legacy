@@ -1,9 +1,9 @@
-import config
 import discord
 from discord.ext import commands
 
+import config
+
 from structlog import get_logger
-from config import BOT_PREFIX
 logger = get_logger(__name__)
 
 intents = discord.Intents().all()
@@ -50,4 +50,4 @@ class Bot(commands.Bot):
             await self.tree.sync(guild=discord.Object(id=908128228701536266))
 
 
-client = Bot(command_prefix=BOT_PREFIX, intents=intents)
+client = Bot(command_prefix=config.BOT_PREFIX, intents=intents)
