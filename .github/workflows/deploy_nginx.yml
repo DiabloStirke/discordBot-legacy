@@ -26,4 +26,4 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
           cd controlpanel
-          docker-compose up nginx -d --build --force-recreate
+          docker compose up nginx -d --build --force-recreate

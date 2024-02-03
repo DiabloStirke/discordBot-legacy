@@ -27,4 +27,4 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
           cd controlpanel
-          docker-compose up bot_control_panel -d --build --force-recreate
+          docker compose up bot_control_panel -d --build --force-recreate
