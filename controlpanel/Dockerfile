@@ -14,5 +14,7 @@ RUN useradd -mU gunicron
 RUN chown -R gunicron:gunicron /controlpanel
 USER gunicron
 
+ENV FLASK_APP=web
+
 ENTRYPOINT ["bash", "entrypoint.sh"]
 

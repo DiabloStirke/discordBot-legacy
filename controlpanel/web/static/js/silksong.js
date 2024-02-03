@@ -14,7 +14,7 @@ function formatNewsDateMessage(date){
         msg = `Yesterday was ${formatted_date}. There were silksong news yesterday! `;
     }
     else if (daysBetween(date, today) > 1){
-        msg = `The date was ${formatted_date}. There were silksong news on that day! `;
+        msg = `There were silksong news on ${formatted_date}! `;
     }
     return msg;
 }

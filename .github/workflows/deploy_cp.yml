@@ -1,0 +1,30 @@
+name: Deploy Control Panel
+
+on:
+  push:
+    paths:
+      - '.github/workflows/deploy-cp.yml'
+      - 'controlpanel/**'
+      - '!controlpanel/nginx/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4      
+            
+      - name: Run docker container
+        env:
+          FLASK_SECRET_KEY: ${{ secrets.FLASK_SECRET_KEY }}
+          CONTROL_PANEL_ADMIN_ID: ${{ secrets.CONTROL_PANEL_ADMIN_ID }}
+          DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+          DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+          POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          cd controlpanel
+          docker-compose up bot_control_panel -d --build --force-recreate

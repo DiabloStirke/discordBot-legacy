@@ -7,7 +7,7 @@ def token_auth(func):
     """A decorator for routes that require an auth token."""
     @wraps(func)
     def wrapper(*args, **kwargs):
-        token = request.headers.get('Authorization')
+        token = request.headers.get('X-Auth-Token')
         if not token:
             return jsonify({'error': 'No auth token provided'}), 401
 

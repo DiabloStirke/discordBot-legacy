@@ -52,6 +52,8 @@ services:
       file: bot/docker-compose.yml
       service: discord_bot
     command: "python bot.py"
+    env_file:
+      - .env
     develop:
       watch:
         - action: sync+restart
