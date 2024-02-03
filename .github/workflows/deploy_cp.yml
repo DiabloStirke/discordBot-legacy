@@ -3,7 +3,7 @@ name: Deploy Control Panel
 on:
   push:
     paths:
-      - '.github/workflows/deploy-cp.yml'
+      - '.github/workflows/deploy_cp.yml'
       - 'controlpanel/**'
       - '!controlpanel/nginx/**'
   workflow_dispatch:
