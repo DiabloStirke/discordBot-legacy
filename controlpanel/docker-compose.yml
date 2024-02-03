@@ -16,6 +16,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - FLASK_APP=${FLASK_APP:-web}
+      - PREFERRED_URL_SCHEME=${PREFERRED_URL_SCHEME:-https}
     depends_on:
       - postgres_bot
     networks:

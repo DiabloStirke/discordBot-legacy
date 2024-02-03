@@ -1,14 +1,12 @@
 import datetime
 
-from flask import redirect, session, request, send_from_directory, render_template
+from flask import redirect, session, request, send_from_directory, render_template, url_for
 
 from flask import Blueprint
 from web.models.user import User, RoleEnum
 from web.discord_client import DiscordClient, DiscordClientException
 from web.utils import ensure_session, ensure_role, get_main_context, tz_now
 import web.config as config
-
-CALLBACK_URL = '{base}discord-authorized'
 
 dc = DiscordClient(
     client_id=config.DISCORD_CLIENT_ID,
@@ -71,7 +69,8 @@ def logout():
 
 @auth.route('/discord-oauth', methods=['GET'])
 def discord_oauth2():
-    authorize_url = dc.get_authorization_url(CALLBACK_URL.format(base=request.url_root))
+    callback = url_for('auth.authorized', _external=True)
+    authorize_url = dc.get_authorization_url(callback)
     return redirect(authorize_url)
 
 
@@ -79,7 +78,8 @@ def discord_oauth2():
 def authorized():
     code = request.args.get('code')
     try:
-        auth_data = dc.exchange_code(code, CALLBACK_URL.format(base=request.url_root))
+        callback = url_for('auth.authorized', _external=True)
+        auth_data = dc.exchange_code(code, callback)
     except DiscordClientException:
         return redirect('/login')
     set_session(auth_data)
