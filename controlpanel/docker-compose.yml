@@ -17,6 +17,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - FLASK_APP=${FLASK_APP:-web}
       - PREFERRED_URL_SCHEME=${PREFERRED_URL_SCHEME:-https}
+      - CONTROL_PANEL_ADMIN_ID=${CONTROL_PANEL_ADMIN_ID}
     depends_on:
       - postgres_bot
     networks:
