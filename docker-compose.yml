@@ -8,6 +8,8 @@ services:
       - .env
     volumes:
       - ./controlpanel/data/postgres/:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
   
   # Depeneds on breaks the build
   # bot_control_panel:
@@ -28,6 +30,8 @@ services:
       - .env
     volumes:
       - ./controlpanel/migrations:/controlpanel/migrations
+    ports:
+      - 8000:8000
     command: "--development"
     develop:
       watch:

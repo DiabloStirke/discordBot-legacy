@@ -18,8 +18,6 @@ services:
       - FLASK_APP=${FLASK_APP:-web}
     depends_on:
       - postgres_bot
-    ports:
-      - 8000:8000
     networks:
       - ds_net
   
@@ -33,8 +31,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - /var/discordbot/data/postgres:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
     networks:
       - ds_net
 
