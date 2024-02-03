@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/deploy_nginx.yml'
       - 'controlpanel/nginx/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
