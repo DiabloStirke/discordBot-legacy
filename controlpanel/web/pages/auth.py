@@ -69,7 +69,7 @@ def logout():
 
 @auth.route('/discord-oauth', methods=['GET'])
 def discord_oauth2():
-    callback = url_for('auth.authorized', _external=True)
+    callback = url_for('auth.authorized', _external=True, _scheme=config.PREFERRED_URL_SCHEME)
     authorize_url = dc.get_authorization_url(callback)
     return redirect(authorize_url)
 
@@ -78,7 +78,7 @@ def discord_oauth2():
 def authorized():
     code = request.args.get('code')
     try:
-        callback = url_for('auth.authorized', _external=True)
+        callback = url_for('auth.authorized', _external=True, _scheme=config.PREFERRED_URL_SCHEME)
         auth_data = dc.exchange_code(code, callback)
     except DiscordClientException:
         return redirect('/login')
