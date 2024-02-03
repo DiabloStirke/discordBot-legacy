@@ -10,7 +10,7 @@ from web.config import TZ
 def ensure_session(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if 'token' not in session:
+        if 'token' not in session and 'expires' not in session:
             return redirect(url_for('auth.login'))
         if session['expires'] < tz_now():
             redirect(url_for('auth.login', refresh=True))
