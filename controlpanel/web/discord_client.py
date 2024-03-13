@@ -9,9 +9,18 @@ class DiscordClientException(Exception):
 class DiscordClient:
     BASE_URL = 'https://discord.com/api/v10'
 
-    def __init__(self, client_id, client_secret):
-        self.client_id = client_id
-        self.client_secret = client_secret
+    def __init__(self, client_id=None, client_secret=None, bot_token=None):
+        self.client_id = None
+        self.client_secret = None
+        self.bot_token = None
+
+        if bot_token:
+            self.bot_token = bot_token
+        elif client_id and client_secret:
+            self.client_id = client_id
+            self.client_secret = client_secret
+        else:
+            raise ValueError('You must provide either a bot token or a client id and secret')
 
     def get_authorization_url(self, redirect_uri, scopes=None):
         if scopes is None:
@@ -69,21 +78,46 @@ class DiscordClient:
         ))
         if response.status_code != 200:
             raise DiscordClientException(response.content, response.status_code)
-        return response.json()  
-
-    def me(self, token):
-        url = f"{self.BASE_URL}/users/@me"
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
-        response = requests.get(url, headers=headers)
-        if response.status_code != 200:
-            raise DiscordClientException(response.content, response.status_code)
         return response.json()
 
-    def get_avatar_url(self, token):
+    def me(self, token=None):
+        url = f"{self.BASE_URL}/users/@me"
+        return self._request('GET', url, token)
+
+    def get_avatar_url(self, token=None):
         user = self.me(token)
         return f"https://cdn.discordapp.com/avatars/{user['id']}/{user['avatar']}.png"
+
+    def send_message(self, channel_id, content, token=None):
+        url = f"{self.BASE_URL}/channels/{channel_id}/messages"
+        data = {
+            'content': content
+        }
+        return self._request('POST', url, token, data)
+
+    def get_dm_channel(self, user_id, token=None):
+        url = f"{self.BASE_URL}/users/@me/channels"
+        data = {
+            'recipient_id': user_id
+        }
+        return self._request('POST', url, token, data)
+
+    def send_dm(self, user_id, content, token=None):
+        channel = self.get_dm_channel(user_id, token)
+        return self.send_message(channel['id'], content, token)
+
+    def _request(self, method, url, token=None, data=None):
+        if not token and not self.bot_token:
+            raise ValueError('You must provide a token or a bot token to make requests')
+        headers = {
+            'Authorization': f'Bearer {token}' if token else f'Bot {self.bot_token}'
+        }
+        response = requests.request(method, url, headers=headers, json=data)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise DiscordClientException(response.content, response.status_code)
+        return response.json()
 
     @staticmethod
     def get_scopes(
@@ -118,4 +152,3 @@ class DiscordClient:
     ):
         scopes = [key.replace('_', '.') for key, value in locals().items() if value]
         return '%20'.join(scopes)
-

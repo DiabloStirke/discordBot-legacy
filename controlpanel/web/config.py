@@ -4,6 +4,7 @@ TZ = os.environ.get("TZ", 'Europe/Madrid')
 
 SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", 'bad_secret_key')
 
+DISCORD_BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN", None)
 DISCORD_CLIENT_ID = os.environ.get("DISCORD_CLIENT_ID", None)
 DISCORD_CLIENT_SECRET = os.environ.get("DISCORD_CLIENT_SECRET", None)
 CONTROL_PANEL_ADMIN_ID = os.environ.get("CONTROL_PANEL_ADMIN_ID", None)

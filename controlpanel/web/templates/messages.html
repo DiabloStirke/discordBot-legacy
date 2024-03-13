@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %} Messages {% endblock %}
+
+{% block content %}
+    <div class="container"> 
+        <h3>Messages (for now forwarding exclusevely to 
+            <!-- <a href="https://discord.com/users/334626027961712642/">talking_crow</a> -->
+            <a href="https://discord.com/users/369546906449346560/">i_rayman_i</a>
+            )</h3>
+        <form action="/messages", method="post">
+            <div class="form-group mt-5">
+                <textarea class="form-control" id="message" rows="3" name="message"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Send</button>
+        </form>
+    </div>
+{% endblock %}
