@@ -1,11 +1,11 @@
 import datetime
 
-from flask import redirect, session, request, send_from_directory, render_template, url_for
+from flask import redirect, session, request, render_template, url_for, send_from_directory
 
-from flask import Blueprint
+from web.auth import AuthBlueprint
 from web.models.user import User, RoleEnum
 from web.discord_client import DiscordClient, DiscordClientException
-from web.utils import ensure_session, ensure_role, get_main_context, tz_now
+from web.utils import get_main_context, tz_now
 import web.config as config
 
 dc = DiscordClient(
@@ -13,7 +13,7 @@ dc = DiscordClient(
     client_secret=config.DISCORD_CLIENT_SECRET
 )
 
-auth = Blueprint('auth', __name__)
+auth = AuthBlueprint('auth', __name__)
 
 
 def set_session(auth_data):
@@ -33,17 +33,16 @@ def unset_session():
     session.pop('user', None)
 
 
-@auth.route('/', endpoint='index')
-@ensure_session
-@ensure_role(RoleEnum.ADMIN)
+@auth.auth_route('/', required_role=RoleEnum.ADMIN, methods=['GET'])
 def index():
     context = get_main_context()
     return render_template('dashboard.html', **context)
 
 
-@auth.route('/login')
+@auth.route('/login', methods=['GET'])
 def login():
     request_data = request.args.to_dict()
+    next_page = request_data.get('next', '/')
     if 'refresh' in request_data:
         refresh = session['refresh']
         try:
@@ -52,14 +51,15 @@ def login():
         except DiscordClientException:
             return redirect('/login')
 
-        return redirect('/')
+        return redirect(next_page)
 
     if 'token' in session:
-        return redirect('/')
+        return redirect(next_page)
+    session['next'] = next_page
     return send_from_directory('static', 'login.html')
 
 
-@auth.route('/logout')
+@auth.route('/logout', methods=['GET'])
 def logout():
     if 'token' in session:
         dc.revoke_token(session['token'])
@@ -77,6 +77,7 @@ def discord_oauth2():
 @auth.route('/discord-authorized', methods=['GET'])
 def authorized():
     code = request.args.get('code')
+    next_page = session.pop('next', '/')
     try:
         callback = url_for('auth.authorized', _external=True, _scheme=config.PREFERRED_URL_SCHEME)
         auth_data = dc.exchange_code(code, callback)
@@ -91,4 +92,4 @@ def authorized():
         if user.avatar_url != session['user']['avatar_url']:
             user.update(avatar_url=session['user']['avatar_url'])
 
-    return redirect('/')
+    return redirect(next_page)

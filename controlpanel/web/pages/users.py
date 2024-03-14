@@ -1,14 +1,13 @@
-from flask import render_template, request, redirect, url_for, flash, Blueprint
+from flask import render_template, request, redirect, url_for, flash
+from web.auth import AuthBlueprint
 from web.models.user import User, RoleEnum
-from web.utils import ensure_session, ensure_role, get_main_context
+from web.utils import get_main_context
 
 
-users = Blueprint('users', __name__)
+users = AuthBlueprint('users', __name__)
 
 
-@users.route('/users/', methods=['GET'], endpoint='get_users')
-@ensure_session
-@ensure_role(RoleEnum.ADMIN)
+@users.auth_route('/users/', required_role=RoleEnum.ADMIN, methods=['GET'])
 def get_users():
     context = get_main_context()
     context['users'] = User.get_all()
@@ -16,9 +15,7 @@ def get_users():
     return render_template('users.html', **context), 200
 
 
-@users.route('/users/new/', methods=['POST'], endpoint='new_user')
-@ensure_session
-@ensure_role(RoleEnum.ADMIN)
+@users.auth_route('/users/new/', required_role=RoleEnum.ADMIN, methods=['POST'])
 def new_user():
     request_data = request.form.to_dict()
     disc_id = request_data.get('discord_id', None)
@@ -52,9 +49,7 @@ def new_user():
     return redirect(url_for('users.get_users'))
 
 
-@users.route('/users/<string:disc_id>/delete/', methods=['POST'], endpoint='delete_user')
-@ensure_session
-@ensure_role(RoleEnum.ADMIN)
+@users.auth_route('/users/<string:disc_id>/delete/', required_role=RoleEnum.ADMIN, methods=['POST'])
 def delete_user(disc_id):
     user = User.get_by_id(disc_id)
     if not user:
@@ -68,9 +63,7 @@ def delete_user(disc_id):
     return redirect(url_for('users.get_users'))
 
 
-@users.route('/users/<string:disc_id>/edit', methods=['POST'], endpoint='edit_user')
-@ensure_session
-@ensure_role(RoleEnum.ADMIN)
+@users.auth_route('/users/<string:disc_id>/edit', required_role=RoleEnum.ADMIN, methods=['POST'])
 def edit_user(disc_id):
     request_data = request.form.to_dict()
     role = User.validate_role(request_data.get('role', ''))

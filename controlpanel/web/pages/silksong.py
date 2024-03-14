@@ -1,15 +1,14 @@
-from flask import render_template, request, redirect, url_for, flash, Blueprint, current_app
+from flask import render_template, request, redirect, url_for, flash, current_app
 from flask import session
+from web.auth import AuthBlueprint
 from web.models.user import RoleEnum
 from web.models.silksong import SilksongNews
-from web.utils import ensure_session, ensure_role, get_main_context, tz_now, tz_fromiso, ordinal
+from web.utils import get_main_context, tz_now, tz_fromiso, ordinal
 
-silksong = Blueprint('silksong', __name__)
+silksong = AuthBlueprint('silksong', __name__)
 
 
-@silksong.route('/silksong/', methods=['GET'], endpoint='silksong_get')
-@ensure_session
-@ensure_role(RoleEnum.ADMIN)
+@silksong.auth_route('/silksong/', required_role=RoleEnum.ADMIN, methods=['GET'])
 def silksong_get():
     now = tz_now()
     verbose_date = f'{now.strftime("%B")} {ordinal(now.day)} {now.year}'
@@ -34,9 +33,7 @@ def silksong_get():
     return render_template('silksong.html', **context), 200
 
 
-@silksong.route('/silksong', methods=['POST'], endpoint='silksong_post')
-@ensure_session
-@ensure_role(RoleEnum.ADMIN)
+@silksong.auth_route('/silksong', required_role=RoleEnum.ADMIN, methods=['POST'])
 def silksong_post():
     request_data = request.form
     message = request_data.get('message', None)
@@ -64,13 +61,11 @@ def silksong_post():
     return redirect(url_for('silksong.silksong_get'))
 
 
-@silksong.route(
+@silksong.auth_route(
     '/silksong/<int:silksong_news_id>/delete',
     methods=['POST'],
-    endpoint='silksong_delete'
+    required_role=RoleEnum.ADMIN
 )
-@ensure_session
-@ensure_role(RoleEnum.ADMIN)
 def silksong_delete(silksong_news_id):
     silksong_news = SilksongNews.get_by_id(silksong_news_id)
     if silksong_news:
@@ -82,9 +77,11 @@ def silksong_delete(silksong_news_id):
     return redirect(url_for('silksong.silksong_get'))
 
 
-@silksong.route('/silksong/<int:silksong_news_id>/edit', methods=['POST'], endpoint='silksong_edit')
-@ensure_session
-@ensure_role(RoleEnum.ADMIN)
+@silksong.auth_route(
+    '/silksong/<int:silksong_news_id>/edit',
+    methods=['POST'],
+    required_role=RoleEnum.ADMIN
+)
 def silksong_edit(silksong_news_id):
     request_data = request.form
     message = request_data.get('message', None)
