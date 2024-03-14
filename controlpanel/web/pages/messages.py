@@ -28,7 +28,7 @@ def messages_send():
 
     try:
         bot_client = DiscordClient(bot_token=DISCORD_BOT_TOKEN)
-        bot_client.send_dm('369546906449346560', message)
+        bot_client.send_dm('334626027961712642', message)
     except DiscordClientException as e:
         flash('Error sending message', 'error')
         current_app.logger.error(e)
